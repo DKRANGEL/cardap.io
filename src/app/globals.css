@@ -4,6 +4,81 @@
 @source "./**/*.{ts,tsx}";
 @source "../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}";
 
+@theme {
+    --color-carvao-0: #fffdfa;
+    --color-carvao-50: #faf8f4;
+    --color-carvao-100: #f2ede5;
+    --color-carvao-200: #e6ded2;
+    --color-carvao-300: #d3c8b8;
+    --color-carvao-400: #a99d8c;
+    --color-carvao-500: #786d5f;
+    --color-carvao-600: #5a5146;
+    --color-carvao-700: #433c33;
+    --color-carvao-800: #2d2822;
+    --color-carvao-900: #1c1814;
+
+    --color-brasa-50: #fef4ee;
+    --color-brasa-100: #fde3d3;
+    --color-brasa-200: #fac5a6;
+    --color-brasa-300: #f59e6f;
+    --color-brasa-400: #ee7538;
+    --color-brasa-500: #e05616;
+    --color-brasa-600: #bd3f0d;
+    --color-brasa-700: #9a330f;
+    --color-brasa-800: #7b2c12;
+    --color-brasa-900: #652712;
+
+    --color-sucesso: #0f6e5e;
+    --color-sucesso-suave: #e6f4f1;
+    --color-perigo: #9f1239;
+    --color-perigo-suave: #fdeef2;
+    --color-aviso: #8a5a00;
+    --color-aviso-suave: #fdf2dc;
+
+    --color-superficie: var(--color-carvao-0);
+    --color-superficie-sutil: var(--color-carvao-50);
+    --color-superficie-marcada: var(--color-carvao-100);
+    --color-borda: var(--color-carvao-200);
+    --color-borda-forte: var(--color-carvao-300);
+    --color-tinta: var(--color-carvao-900);
+    --color-tinta-media: var(--color-carvao-600);
+    --color-tinta-suave: var(--color-carvao-500);
+    --color-acao: var(--color-brasa-600);
+    --color-acao-hover: var(--color-brasa-700);
+    --color-acao-suave: var(--color-brasa-50);
+    --color-acao-contraste: var(--color-carvao-0);
+
+    --radius-xs: 6px;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+
+    --spacing-toque: 44px;
+    --spacing-barra: 56px;
+
+    --font-sans: var(--fonte-archivo), system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    --shadow-sutil: 0 1px 2px 0 rgba(28, 24, 20, .06);
+    --shadow-flutuante: 0 2px 10px -2px rgba(28, 24, 20, .16);
+    --shadow-barra: 0 -8px 24px -12px rgba(28, 24, 20, .20);
+    --shadow-folha: 0 -16px 48px -8px rgba(28, 24, 20, .28);
+}
+
+/* cor da loja: valor padrão, sobrescrito inline em /[slug] */
+:root {
+    --loja: #bd3f0d;
+    --loja-contraste: #fffdfa;
+    --loja-tinta: #9a330f;
+}
+
+@layer base {
+    html { -webkit-text-size-adjust: 100%; }
+    body { background: var(--color-superficie); color: var(--color-tinta); }
+    :focus-visible { outline: 2px solid var(--color-carvao-900); outline-offset: 2px; }
+    .num { font-variant-numeric: tabular-nums; }
+}
+
 @utility line-clamp-2 {
     overflow: hidden;
     display: -webkit-box;
