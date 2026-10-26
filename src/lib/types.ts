@@ -4,6 +4,8 @@ export type Loja = {
     nome: string
     whatsapp: string
     cor_primaria: string | null
+    cor_contraste: string | null
+    cor_tinta: string | null
     logo_url: string | null
 }
 

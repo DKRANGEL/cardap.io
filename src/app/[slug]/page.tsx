@@ -1,7 +1,11 @@
 import { notFound } from 'next/navigation'
+import type { CSSProperties } from 'react'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { derivarCorDaLoja } from '@/lib/cor-da-loja'
 import { MenuClient } from '@/components/cardapio/menu-client'
+
+const COR_PADRAO = '#bd3f0d'
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -12,7 +16,7 @@ async function getLoja(slug: string) {
 
     const { data: loja } = await supabase
         .from('lojas')
-        .select('id, slug, nome, whatsapp, cor_primaria, logo_url')
+        .select('id, slug, nome, whatsapp, cor_primaria, cor_contraste, cor_tinta, logo_url')
         .eq('slug', slug)
         .eq('ativo', true)
         .maybeSingle()
@@ -58,5 +62,17 @@ export default async function CardapioPage({ params }: Props) {
 
     if (!data) notFound()
 
-    return <MenuClient loja={data.loja} categorias={data.categorias} produtos={data.produtos} />
+    const { cor, contraste, tinta } = derivarCorDaLoja(data.loja.cor_primaria ?? COR_PADRAO)
+
+    return (
+        <div
+            style={{
+                '--loja': cor,
+                '--loja-contraste': data.loja.cor_contraste ?? contraste,
+                '--loja-tinta': data.loja.cor_tinta ?? tinta,
+            } as CSSProperties}
+        >
+            <MenuClient loja={data.loja} categorias={data.categorias} produtos={data.produtos} />
+        </div>
+    )
 }
