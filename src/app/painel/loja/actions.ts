@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { derivarCorDaLoja } from '@/lib/cor-da-loja'
 import { lojaSchema, type LojaCampos } from '@/lib/validacao/loja'
 
 export type ResultadoSalvarLoja =
@@ -37,9 +38,12 @@ export async function salvarLoja(formData: FormData): Promise<ResultadoSalvarLoj
         .limit(1)
         .maybeSingle()
 
+    const { contraste, tinta } = derivarCorDaLoja(parsed.data.cor_primaria)
+    const dados = { ...parsed.data, cor_contraste: contraste, cor_tinta: tinta }
+
     const query = existente
-        ? supabase.from('lojas').update(parsed.data).eq('id', existente.id)
-        : supabase.from('lojas').insert({ ...parsed.data, owner_id: user.id })
+        ? supabase.from('lojas').update(dados).eq('id', existente.id)
+        : supabase.from('lojas').insert({ ...dados, owner_id: user.id })
 
     const { data, error } = await query.select('id, slug').single()
 

@@ -1,46 +1,32 @@
 import { heroui } from "@heroui/react";
 
-const emerald = {
-    50:  "#ecfdf5",
-    100: "#d1fae5",
-    200: "#a7f3d0",
-    300: "#6ee7b7",
-    400: "#34d399",
-    500: "#10b981",
-    600: "#059669",
-    700: "#047857",
-    800: "#065f46",
-    900: "#064e3b",
-    DEFAULT: "#059669",
-    foreground: "#ffffff"
-};
-
-const slate = {
-    50:  "#f8fafc",
-    100: "#f1f5f9",
-    200: "#e2e8f0",
-    300: "#cbd5e1",
-    400: "#94a3b8",
-    500: "#64748b",
-    600: "#475569",
-    700: "#334155",
-    800: "#1e293b",
-    900: "#0f172a",
-    DEFAULT: "#94a3b8",
-};
-
 export default heroui({
     themes: {
         light: {
             colors: {
-                background: "#ffffff",
-                foreground: "#0f172a",
-                focus: "#059669",
-
-                primary: emerald,
-                success: emerald,
-                default: slate
-            }
-        }
-    }
+                background: "#fffdfa",
+                foreground: "#1c1814",
+                focus: "#1c1814",
+                primary: {
+                    50: "#fef4ee", 100: "#fde3d3", 200: "#fac5a6", 300: "#f59e6f",
+                    400: "#ee7538", 500: "#e05616", 600: "#bd3f0d", 700: "#9a330f",
+                    800: "#7b2c12", 900: "#652712",
+                    DEFAULT: "#bd3f0d", foreground: "#fffdfa",
+                },
+                default: {
+                    50: "#faf8f4", 100: "#f2ede5", 200: "#e6ded2", 300: "#d3c8b8",
+                    400: "#a99d8c", 500: "#786d5f", 600: "#5a5146", 700: "#433c33",
+                    800: "#2d2822", 900: "#1c1814",
+                    DEFAULT: "#a99d8c", foreground: "#1c1814",
+                },
+                success: { DEFAULT: "#0f6e5e", 50: "#e6f4f1", 600: "#0f6e5e", foreground: "#fffdfa" },
+                danger: { DEFAULT: "#9f1239", 50: "#fdeef2", 600: "#9f1239", foreground: "#fffdfa" },
+                warning: { DEFAULT: "#8a5a00", 50: "#fdf2dc", 600: "#8a5a00", foreground: "#fffdfa" },
+            },
+            layout: {
+                radius: { small: "10px", medium: "14px", large: "20px" },
+                borderWidth: { small: "1px", medium: "1px", large: "2px" },
+            },
+        },
+    },
 });

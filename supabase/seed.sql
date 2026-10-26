@@ -29,7 +29,7 @@ values (
     'burger-do-joca-demo',
     'Burger do Joca (Demo)',
     '+5511999999999',
-    '#059669',
+    '#bd3f0d',
     true
 )
 on conflict (id) do nothing;
