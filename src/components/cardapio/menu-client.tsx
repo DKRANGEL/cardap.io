@@ -1,7 +1,7 @@
 'use client'
 
 import { SearchIcon, ShoppingCartIcon, PlusIcon, MinusIcon, ImageOffIcon, QrCodeIcon } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type CSSProperties } from 'react'
 import NextLink from 'next/link'
 import {
     Navbar, NavbarBrand, NavbarContent, NavbarItem,
@@ -14,13 +14,16 @@ import type { Categoria, Loja, Produto } from '@/lib/types'
 const toBRL = (centavos: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(centavos / 100)
 
+const BOTAO_LOJA = 'bg-[var(--loja)] text-[var(--loja-contraste)] data-[hover=true]:opacity-90'
+
 type Props = {
     loja: Loja
     categorias: Categoria[]
     produtos: Produto[]
+    estiloLoja: CSSProperties
 }
 
-export function MenuClient({ loja, categorias, produtos }: Props) {
+export function MenuClient({ loja, categorias, produtos, estiloLoja }: Props) {
     const [query, setQuery] = useState('')
     const [cart, setCart] = useState<Record<string, number>>({})
     const [cartOpen, setCartOpen] = useState(false)
@@ -61,7 +64,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
     }
 
     return (
-        <div className="min-h-dvh bg-background text-foreground">
+        <div className="min-h-dvh bg-background text-foreground" style={estiloLoja}>
             <Navbar isBordered className="sticky top-0 z-50 bg-background/80 backdrop-blur-md">
                 <NavbarBrand className="gap-2">
                     {loja.logo_url ? (
@@ -69,7 +72,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                     ) : (
                         <div
                             aria-hidden
-                            className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+                            className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--loja)] text-xs font-bold text-[var(--loja-contraste)]">
                             {loja.nome.charAt(0).toUpperCase()}
                         </div>
                     )}
@@ -92,7 +95,8 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                         </Button>
                     </NavbarItem>
                     <NavbarItem>
-                        <Badge color="primary" content={totalItems} isInvisible={!totalItems} shape="circle">
+                        <Badge classNames={{ badge: 'bg-[var(--loja)] text-[var(--loja-contraste)] border-0' }}
+                               content={totalItems} isInvisible={!totalItems} shape="circle">
                             <Button
                                 isIconOnly
                                 radius="full"
@@ -165,7 +169,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                                                     )}
                                                     <div className="flex flex-col flex-1 min-w-0">
                                                         <span
-                                                            className="text-[11px] uppercase tracking-wide text-success-500 font-semibold">
+                                                            className="text-[11px] uppercase tracking-wide text-[var(--loja-tinta)] font-semibold">
                                                             {categoria.nome}
                                                         </span>
                                                         <h3 className="mt-1 text-base font-extrabold leading-tight line-clamp-2">
@@ -177,7 +181,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                                                             </p>
                                                         )}
                                                         <div className="mt-3 flex items-center justify-between">
-                                                            <span className="text-lg font-extrabold text-success-600">
+                                                            <span className="num text-lg font-extrabold text-[var(--loja-tinta)]">
                                                                 {toBRL(p.preco_centavos)}
                                                             </span>
                                                             {cart[p.id] ? (
@@ -210,7 +214,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                                                                     isIconOnly
                                                                     size="sm"
                                                                     radius="full"
-                                                                    color="primary"
+                                                                    className={BOTAO_LOJA}
                                                                     aria-label="Adicionar"
                                                                     onPress={() => add(p.id)}
                                                                 >
@@ -235,7 +239,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
             {totalItems > 0 && (
                 <div className="fixed inset-x-0 bottom-0 z-50 p-3">
                     <div className="mx-auto max-w-md sm:max-w-xl">
-                        <Button color="primary" size="lg" radius="full" onPress={() => setCartOpen(true)}>
+                        <Button className={BOTAO_LOJA} size="lg" radius="full" onPress={() => setCartOpen(true)}>
                             {totalItems} item{totalItems > 1 ? 's' : ''} • {toBRL(totalPrice)} — Ver carrinho
                         </Button>
                     </div>
@@ -245,7 +249,7 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
             <Modal isOpen={cartOpen} onOpenChange={setCartOpen} scrollBehavior="inside">
                 <ModalContent>
                     {(onClose) => (
-                        <>
+                        <div className="contents" style={estiloLoja}>
                             <ModalHeader>Carrinho</ModalHeader>
                             <ModalBody>
                                 {totalItems === 0 && <p className="text-default-500">Seu carrinho está vazio.</p>}
@@ -291,10 +295,10 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                             </ModalBody>
                             <ModalFooter>
                                 <Button variant="light" onPress={() => (setCart({}), onClose())}>Limpar</Button>
-                                <Button color="primary" onPress={() => alert('Seguir para checkout…')}>Finalizar
+                                <Button className={BOTAO_LOJA} onPress={() => alert('Seguir para checkout…')}>Finalizar
                                     pedido</Button>
                             </ModalFooter>
-                        </>
+                        </div>
                     )}
                 </ModalContent>
             </Modal>

@@ -64,15 +64,18 @@ export default async function CardapioPage({ params }: Props) {
 
     const { cor, contraste, tinta } = derivarCorDaLoja(data.loja.cor_primaria ?? COR_PADRAO)
 
+    const estiloLoja = {
+        '--loja': cor,
+        '--loja-contraste': data.loja.cor_contraste ?? contraste,
+        '--loja-tinta': data.loja.cor_tinta ?? tinta,
+    } as CSSProperties
+
     return (
-        <div
-            style={{
-                '--loja': cor,
-                '--loja-contraste': data.loja.cor_contraste ?? contraste,
-                '--loja-tinta': data.loja.cor_tinta ?? tinta,
-            } as CSSProperties}
-        >
-            <MenuClient loja={data.loja} categorias={data.categorias} produtos={data.produtos} />
-        </div>
+        <MenuClient
+            loja={data.loja}
+            categorias={data.categorias}
+            produtos={data.produtos}
+            estiloLoja={estiloLoja}
+        />
     )
 }
