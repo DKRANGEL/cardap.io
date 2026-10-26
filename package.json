@@ -1,6 +1,7 @@
 {
   "name": "cardap.io",
   "version": "0.1.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
@@ -10,9 +11,11 @@
   },
   "dependencies": {
     "@heroui/react": "^2.8.3",
+    "@heroui/theme": "^2.4.21",
     "firebase": "^12.2.1",
     "firebase-admin": "^13.5.0",
     "framer-motion": "^12.23.12",
+    "lucide-react": "^0.543.0",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -20,13 +23,14 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.2",
-    "tailwindcss": "^4",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.13",
     "typescript": "^5"
   }
 }
