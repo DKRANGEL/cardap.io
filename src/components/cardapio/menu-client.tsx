@@ -1,7 +1,8 @@
 'use client'
 
-import { SearchIcon, ShoppingCartIcon, PlusIcon, MinusIcon, ImageOffIcon } from 'lucide-react'
+import { SearchIcon, ShoppingCartIcon, PlusIcon, MinusIcon, ImageOffIcon, QrCodeIcon } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import NextLink from 'next/link'
 import {
     Navbar, NavbarBrand, NavbarContent, NavbarItem,
     Button, Card, CardBody, Image, Input,
@@ -78,6 +79,18 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                     </div>
                 </NavbarBrand>
                 <NavbarContent justify="end">
+                    <NavbarItem>
+                        <Button
+                            as={NextLink}
+                            href={`/${loja.slug}/qr`}
+                            isIconOnly
+                            radius="full"
+                            variant="flat"
+                            aria-label="Ver QR code do cardápio"
+                        >
+                            <QrCodeIcon />
+                        </Button>
+                    </NavbarItem>
                     <NavbarItem>
                         <Badge color="primary" content={totalItems} isInvisible={!totalItems} shape="circle">
                             <Button
