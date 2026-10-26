@@ -24,7 +24,7 @@ type Props = {
 }
 
 const COR_PADRAO = '#059669'
-const campoInput = { input: 'text-base' }
+const campoInput = { input: 'text-base placeholder:text-default-300' }
 
 export function LojaForm({ loja, whatsappInicial }: Props) {
     const router = useRouter()
@@ -139,7 +139,7 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
                 inputMode="tel"
                 autoComplete="tel"
                 label="WhatsApp da loja"
-                placeholder="(11) 91234-5678"
+                placeholder="(00) 90000-0000"
                 value={whatsapp}
                 onValueChange={(v) => setWhatsapp(mascararWhatsapp(v))}
                 isRequired
