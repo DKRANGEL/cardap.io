@@ -28,7 +28,7 @@ export function SeletorQuantidade({ nome, qtd, onAdd, onSub }: Props) {
                     className={`${BOTAO_BASE} bg-superficie-marcada text-tinta`}>
                 <MinusIcon aria-hidden className="h-5 w-5" />
             </button>
-            <span aria-live="polite" className="min-w-8 text-center text-base font-bold tabular-nums">{qtd}</span>
+            <span aria-live="polite" className="min-w-7 text-center text-base font-bold tabular-nums">{qtd}</span>
             <button type="button" aria-label={`Aumentar ${nome}`} onClick={onAdd}
                     className={`${BOTAO_BASE} ${BOTAO_LOJA}`}>
                 <PlusIcon aria-hidden className="h-5 w-5" />
