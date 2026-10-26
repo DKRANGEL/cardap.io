@@ -29,7 +29,7 @@ const PRODUCTS: Product[] = [
         name: 'Smash Furioso',
         description: 'Pão, carne, queijo, alface, tomate, onion rings, pimenta jalapeño e molho da casa.',
         price: 27.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/smash-furioso.png',
         category: 'Burgers',
     },
     {
@@ -37,7 +37,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Duplo',
         description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
         price: 32.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-duplo.png',
         category: 'Burgers',
     },
     {
@@ -45,7 +45,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Triplo',
         description: 'Três smash de 100g, cheddar duplo e cebola caramelizada.',
         price: 38.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-triplo.png',
         category: 'Burgers',
     },
     {
@@ -53,7 +53,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Bacon',
         description: 'Smash de 150g, bacon crocante e cheddar.',
         price: 34.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-bacon.png',
         category: 'Burgers',
     },
     {
@@ -61,7 +61,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Clássico',
         description: 'Smash de 100g, queijo, alface, tomate e molho da casa.',
         price: 24.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-classico.png',
         category: 'Burgers',
     },
     {
@@ -69,7 +69,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Vegetariano',
         description: 'Hambúrguer de grão-de-bico, queijo e rúcula.',
         price: 29.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-vegetariano.png',
         category: 'Burgers',
     },
     {
@@ -77,7 +77,7 @@ const PRODUCTS: Product[] = [
         name: 'Burger Especial da Casa',
         description: 'Smash de 100g, queijo, cebola crispy e molho especial.',
         price: 36.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/burger-especial-da-casa.png',
         category: 'Burgers',
     },
     {
@@ -85,7 +85,7 @@ const PRODUCTS: Product[] = [
         name: 'Refrigerante Lata',
         description: '350ml bem gelado.',
         price: 6.5,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/refrigerante-lata.png',
         category: 'Bebidas',
     },
     {
@@ -93,7 +93,7 @@ const PRODUCTS: Product[] = [
         name: 'Batata Palito',
         description: 'Porção crocante 300g.',
         price: 14.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/batata-palito.png',
         category: 'Acompanhamentos',
     },
     {
@@ -101,7 +101,7 @@ const PRODUCTS: Product[] = [
         name: 'Brownie com Sorvete',
         description: 'Brownie de chocolate com bola de creme.',
         price: 18.9,
-        img: '/images/image_teste_01.jpg',
+        img: '/images/brownie-com-sorvete.png',
         category: 'Sobremesas',
     },
 ]

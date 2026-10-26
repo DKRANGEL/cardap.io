@@ -46,29 +46,29 @@ on conflict (id) do nothing;
 
 insert into public.produtos (id, loja_id, categoria_id, nome, descricao, preco_centavos, foto_url, ativo, ordem) values
     ('c0000000-0000-0000-0000-000000000001', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Smash Furioso', 'Pão, carne, queijo, alface, tomate, onion rings, pimenta jalapeño e molho da casa.', 2790, '/images/image_teste_01.jpg', true, 1),
+     'Smash Furioso', 'Pão, carne, queijo, alface, tomate, onion rings, pimenta jalapeño e molho da casa.', 2790, '/images/smash-furioso.png', true, 1),
     ('c0000000-0000-0000-0000-000000000002', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Burger Duplo', 'Dois smash de 100g, cheddar duplo e cebola caramelizada.', 3290, '/images/image_teste_01.jpg', true, 2),
+     'Burger Duplo', 'Dois smash de 100g, cheddar duplo e cebola caramelizada.', 3290, '/images/burger-duplo.png', true, 2),
     ('c0000000-0000-0000-0000-000000000003', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Burger Triplo', 'Três smash de 100g, cheddar duplo e cebola caramelizada.', 3890, '/images/image_teste_01.jpg', true, 3),
+     'Burger Triplo', 'Três smash de 100g, cheddar duplo e cebola caramelizada.', 3890, '/images/burger-triplo.png', true, 3),
     ('c0000000-0000-0000-0000-000000000004', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Burger Bacon', 'Smash de 150g, bacon crocante e cheddar.', 3490, '/images/image_teste_01.jpg', true, 4),
+     'Burger Bacon', 'Smash de 150g, bacon crocante e cheddar.', 3490, '/images/burger-bacon.png', true, 4),
     ('c0000000-0000-0000-0000-000000000005', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Burger Clássico', 'Smash de 100g, queijo, alface, tomate e molho da casa.', 2490, '/images/image_teste_01.jpg', true, 5),
+     'Burger Clássico', 'Smash de 100g, queijo, alface, tomate e molho da casa.', 2490, '/images/burger-classico.png', true, 5),
     ('c0000000-0000-0000-0000-000000000006', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000001',
-     'Burger Vegetariano', 'Hambúrguer de grão-de-bico, queijo e rúcula.', 2990, '/images/image_teste_01.jpg', true, 6),
+     'Burger Vegetariano', 'Hambúrguer de grão-de-bico, queijo e rúcula.', 2990, '/images/burger-vegetariano.png', true, 6),
 
     ('c0000000-0000-0000-0000-000000000007', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
-     'Refrigerante Lata', '350ml bem gelado.', 650, '/images/image_teste_01.jpg', true, 1),
+     'Refrigerante Lata', '350ml bem gelado.', 650, '/images/refrigerante-lata.png', true, 1),
     ('c0000000-0000-0000-0000-000000000008', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
      'Suco Natural', '500ml, sabor da fruta do dia.', 990, '/images/image_teste_01.jpg', true, 2),
     ('c0000000-0000-0000-0000-000000000009', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
      'Água Mineral', '500ml sem gás.', 450, '/images/image_teste_01.jpg', true, 3),
 
     ('c0000000-0000-0000-0000-000000000010', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
-     'Batata Palito', 'Porção crocante 300g.', 1490, '/images/image_teste_01.jpg', true, 1),
+     'Batata Palito', 'Porção crocante 300g.', 1490, '/images/batata-palito.png', true, 1),
     ('c0000000-0000-0000-0000-000000000011', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
      'Onion Rings', 'Porção de anéis de cebola empanados, 250g.', 1690, '/images/image_teste_01.jpg', true, 2),
     ('c0000000-0000-0000-0000-000000000012', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
-     'Brownie com Sorvete', 'Brownie de chocolate com bola de creme.', 1890, '/images/image_teste_01.jpg', true, 3)
+     'Brownie com Sorvete', 'Brownie de chocolate com bola de creme.', 1890, '/images/brownie-com-sorvete.png', true, 3)
 on conflict (id) do nothing;
