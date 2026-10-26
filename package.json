@@ -12,6 +12,8 @@
   "dependencies": {
     "@heroui/react": "^2.8.3",
     "@heroui/theme": "^2.4.21",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.543.0",
     "next": "15.5.2",
