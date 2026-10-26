@@ -41,5 +41,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE local session state
-.idea/claudeCodeTabState.xml
+# IDE
+/.idea/

@@ -26,82 +26,82 @@ type Product = {
 const PRODUCTS: Product[] = [
     {
         id: 'p1',
-        name: 'Whopper Furioso',
+        name: 'Smash Furioso',
         description: 'Pão, carne, queijo, alface, tomate, onion rings, pimenta jalapeño e molho da casa.',
         price: 27.9,
-        img: '/images/Whopper-Furioso-1.png',
+        img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p2',
         name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada, Dois smash de 100g, cheddar duplo e cebola caramelizada.',
+        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
         price: 32.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p3',
-        name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
-        price: 32.9,
+        name: 'Burger Triplo',
+        description: 'Três smash de 100g, cheddar duplo e cebola caramelizada.',
+        price: 38.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p4',
-        name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
-        price: 32.9,
+        name: 'Burger Bacon',
+        description: 'Smash de 150g, bacon crocante e cheddar.',
+        price: 34.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p5',
-        name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
-        price: 32.9,
+        name: 'Burger Clássico',
+        description: 'Smash de 100g, queijo, alface, tomate e molho da casa.',
+        price: 24.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p6',
-        name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
-        price: 32.9,
+        name: 'Burger Vegetariano',
+        description: 'Hambúrguer de grão-de-bico, queijo e rúcula.',
+        price: 29.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
         id: 'p7',
-        name: 'Burger Duplo',
-        description: 'Dois smash de 100g, cheddar duplo e cebola caramelizada.',
-        price: 32.9,
+        name: 'Burger Especial da Casa',
+        description: 'Smash de 100g, queijo, cebola crispy e molho especial.',
+        price: 36.9,
         img: '/images/image_teste_01.jpg',
         category: 'Burgers',
     },
     {
-        id: 'p3',
+        id: 'p8',
         name: 'Refrigerante Lata',
         description: '350ml bem gelado.',
         price: 6.5,
-        img: 'https://heroui.com/images/fruit-1.jpeg',
+        img: '/images/image_teste_01.jpg',
         category: 'Bebidas',
     },
     {
-        id: 'p4',
+        id: 'p9',
         name: 'Batata Palito',
         description: 'Porção crocante 300g.',
         price: 14.9,
-        img: 'https://images.unsplash.com/photo-1541599540903-216a46ca1dc0?q=80&w=1600&auto=format&fit=crop',
+        img: '/images/image_teste_01.jpg',
         category: 'Acompanhamentos',
     },
     {
-        id: 'p5',
+        id: 'p10',
         name: 'Brownie com Sorvete',
         description: 'Brownie de chocolate com bola de creme.',
         price: 18.9,
-        img: 'https://app.requestly.io/delay/1000/https://heroui.com/images/fruit-4.jpeg',
+        img: '/images/image_teste_01.jpg',
         category: 'Sobremesas',
     },
 ]
@@ -158,8 +158,11 @@ export default function CustomerMenuP0() {
             {/* Top bar */}
             <Navbar isBordered className="sticky top-0 z-50 bg-background/80 backdrop-blur-md">
                 <NavbarBrand className="gap-2">
-                    <Image alt="logo" src="https://avatars.githubusercontent.com/u/9919?s=200&v=4" width={28}
-                           height={28} radius="sm"/>
+                    <div
+                        aria-hidden
+                        className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-xs font-bold text-primary-foreground">
+                        B
+                    </div>
                     <div className="flex flex-col leading-tight">
                         <span className="text-sm font-semibold">Burger do Joca</span>
                         <span className="text-xs text-default-500">Aberto • Retirada / Entrega</span>
