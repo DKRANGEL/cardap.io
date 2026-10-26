@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import NextLink from 'next/link'
 import { Button, Input } from '@heroui/react'
 import { createClient } from '@/lib/supabase/client'
 import { extensaoDoBlob } from '@/lib/imagem'
@@ -41,6 +42,7 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
     const [erros, setErros] = useState<Partial<Record<LojaCampos, string>>>({})
     const [erroGeral, setErroGeral] = useState<string | null>(null)
     const [salvo, setSalvo] = useState(false)
+    const [slugSalvo, setSlugSalvo] = useState<string | null>(loja?.slug ?? null)
 
     useEffect(() => setOrigem(window.location.origin), [])
 
@@ -63,6 +65,8 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
                 setErroGeral(resultado.erro ?? null)
                 return
             }
+
+            setSlugSalvo(resultado.slug)
 
             if (logo) {
                 const supabase = createClient()
@@ -168,9 +172,20 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
             {erroGeral && <p className="text-sm text-danger">{erroGeral}</p>}
             {salvo && <p className="text-sm text-success-600">Loja salva.</p>}
 
-            <Button type="submit" color="primary" size="lg" className="min-h-12" isLoading={pendente}>
-                {loja ? 'Salvar alterações' : 'Criar loja'}
-            </Button>
+            <div className="flex flex-col gap-3">
+                <Button type="submit" color="primary" size="lg" className="min-h-12" isLoading={pendente}>
+                    {loja ? 'Salvar alterações' : 'Criar loja'}
+                </Button>
+                {slugSalvo && (
+                    <Button as={NextLink} href={`/${slugSalvo}`} variant="flat" color="primary" size="lg"
+                            className="min-h-12">
+                        Ver meu cardápio
+                    </Button>
+                )}
+                <Button as={NextLink} href="/painel" variant="light" size="lg" className="min-h-12">
+                    Voltar ao painel
+                </Button>
+            </div>
         </form>
     )
 }

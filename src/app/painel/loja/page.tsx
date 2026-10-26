@@ -1,4 +1,3 @@
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { whatsappParaExibicao } from '@/lib/validacao/loja'
@@ -20,9 +19,6 @@ export default async function LojaPage() {
     return (
         <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 p-6 bg-background text-foreground">
             <div className="flex flex-col gap-1">
-                <Link href="/painel" className="text-sm text-primary underline underline-offset-4">
-                    Voltar ao painel
-                </Link>
                 <h1 className="text-lg font-bold">{loja ? 'Editar loja' : 'Criar sua loja'}</h1>
                 <p className="text-sm text-default-500">
                     {loja

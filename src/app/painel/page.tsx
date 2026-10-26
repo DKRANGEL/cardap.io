@@ -1,5 +1,5 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
+import { BotaoLink } from '@/components/botao-link'
 import { LogoutButton } from './logout-button'
 
 export default async function PainelPage() {
@@ -24,22 +24,14 @@ export default async function PainelPage() {
             {loja ? (
                 <div className="flex flex-col gap-3 rounded-2xl border border-default-200 p-4">
                     <p className="font-semibold">{loja.nome}</p>
-                    <Link href={`/${loja.slug}`} className="text-sm text-primary underline underline-offset-4">
-                        Ver cardápio
-                    </Link>
-                    <Link href={`/${loja.slug}/qr`} className="text-sm text-primary underline underline-offset-4">
-                        Ver QR code
-                    </Link>
-                    <Link href="/painel/loja" className="text-sm text-primary underline underline-offset-4">
-                        Editar loja
-                    </Link>
+                    <BotaoLink href="/painel/loja" principal>Editar loja</BotaoLink>
+                    <BotaoLink href={`/${loja.slug}`}>Ver cardápio</BotaoLink>
+                    <BotaoLink href={`/${loja.slug}/qr`}>Ver QR code</BotaoLink>
                 </div>
             ) : (
                 <div className="flex flex-col gap-3 rounded-2xl border border-default-200 p-4">
                     <p className="text-sm text-default-500">Você ainda não criou sua loja.</p>
-                    <Link href="/painel/loja" className="text-sm font-medium text-primary underline underline-offset-4">
-                        Criar minha loja
-                    </Link>
+                    <BotaoLink href="/painel/loja" principal>Criar minha loja</BotaoLink>
                 </div>
             )}
 
