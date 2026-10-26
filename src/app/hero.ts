@@ -1,4 +1,4 @@
-﻿import { heroui } from "@heroui/react";
+import { heroui } from "@heroui/react";
 
 const emerald = {
     50:  "#ecfdf5",

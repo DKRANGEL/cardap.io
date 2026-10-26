@@ -1,12 +1,18 @@
-'use client'
-import { HeroUIProvider } from '@heroui/react'
+import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+import { Providers } from './providers'
 import './globals.css'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = {
+    title: 'cardap.io',
+    description: 'Cardápio digital para lojistas simples.',
+}
+
+export default function RootLayout({ children }: { children: ReactNode }) {
     return (
         <html lang="pt-BR">
         <body className="min-h-dvh bg-background text-foreground">
-        <HeroUIProvider locale="pt-BR">{children}</HeroUIProvider>
+        <Providers>{children}</Providers>
         </body>
         </html>
     )
