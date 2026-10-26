@@ -61,14 +61,14 @@ insert into public.produtos (id, loja_id, categoria_id, nome, descricao, preco_c
     ('c0000000-0000-0000-0000-000000000007', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
      'Refrigerante Lata', '350ml bem gelado.', 650, '/images/refrigerante-lata.png', true, 1),
     ('c0000000-0000-0000-0000-000000000008', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
-     'Suco Natural', '500ml, sabor da fruta do dia.', 990, '/images/image_teste_01.jpg', true, 2),
+     'Suco Natural', '500ml, sabor da fruta do dia.', 990, '/images/suco-natural.png', true, 2),
     ('c0000000-0000-0000-0000-000000000009', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000002',
-     'Água Mineral', '500ml sem gás.', 450, '/images/image_teste_01.jpg', true, 3),
+     'Água Mineral', '500ml sem gás.', 450, '/images/agua-mineral.png', true, 3),
 
     ('c0000000-0000-0000-0000-000000000010', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
      'Batata Palito', 'Porção crocante 300g.', 1490, '/images/batata-palito.png', true, 1),
     ('c0000000-0000-0000-0000-000000000011', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
-     'Onion Rings', 'Porção de anéis de cebola empanados, 250g.', 1690, '/images/image_teste_01.jpg', true, 2),
+     'Onion Rings', 'Porção de anéis de cebola empanados, 250g.', 1690, '/images/onion-rings.png', true, 2),
     ('c0000000-0000-0000-0000-000000000012', 'a0000000-0000-0000-0000-000000000001', 'b0000000-0000-0000-0000-000000000003',
      'Brownie com Sorvete', 'Brownie de chocolate com bola de creme.', 1890, '/images/brownie-com-sorvete.png', true, 3)
 on conflict (id) do nothing;
