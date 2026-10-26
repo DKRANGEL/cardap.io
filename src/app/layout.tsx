@@ -1,13 +1,12 @@
 'use client'
-import type { ReactNode } from 'react'
 import { HeroUIProvider } from '@heroui/react'
 import './globals.css'
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="pt-BR">
-        <body>
-        <HeroUIProvider>{children}</HeroUIProvider>
+        <body className="min-h-dvh bg-background text-foreground">
+        <HeroUIProvider locale="pt-BR">{children}</HeroUIProvider>
         </body>
         </html>
     )
