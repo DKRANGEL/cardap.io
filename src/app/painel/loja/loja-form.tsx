@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import NextLink from 'next/link'
 import { Button, Input } from '@heroui/react'
+import { CheckIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { extensaoDoBlob } from '@/lib/imagem'
 import { LogoUpload } from '@/components/logo-upload'
@@ -24,7 +25,18 @@ type Props = {
     whatsappInicial: string
 }
 
-const COR_PADRAO = '#059669'
+const COR_PADRAO = '#bd3f0d'
+
+const AMOSTRAS = [
+    { hex: '#bd3f0d', nome: 'Brasa' },
+    { hex: '#9f1239', nome: 'Vinho' },
+    { hex: '#b45309', nome: 'Âmbar' },
+    { hex: '#8a5a00', nome: 'Mostarda' },
+    { hex: '#0f6e5e', nome: 'Verde-azulado' },
+    { hex: '#166534', nome: 'Verde' },
+    { hex: '#1d4ed8', nome: 'Azul' },
+    { hex: '#1c1814', nome: 'Carvão' },
+]
 const campoInput = { input: 'text-base placeholder:text-default-300' }
 
 export function LojaForm({ loja, whatsappInicial }: Props) {
@@ -153,21 +165,41 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
                 errorMessage={erros.whatsapp}
             />
 
-            <div className="flex flex-col gap-2">
-                <label htmlFor="cor_primaria" className="text-sm">Cor principal</label>
-                <div className="flex items-center gap-3">
-                    <input
-                        id="cor_primaria"
-                        name="cor_primaria"
-                        type="color"
-                        value={cor}
-                        onChange={(e) => setCor(e.target.value)}
-                        className="h-11 w-16 cursor-pointer rounded-lg border border-default-200 bg-transparent p-1"
-                    />
-                    <span className="text-sm text-default-500">{cor.toUpperCase()}</span>
+            <fieldset className="flex flex-col gap-2">
+                <legend className="text-sm">Cor da sua loja</legend>
+                <p className="text-sm text-default-500">Aparece nos botões e nos preços do seu cardápio.</p>
+                <div className="flex flex-wrap items-center gap-3" role="group" aria-label="Cores sugeridas">
+                    {AMOSTRAS.map((amostra) => {
+                        const ativa = cor.toLowerCase() === amostra.hex
+                        return (
+                            <button
+                                key={amostra.hex}
+                                type="button"
+                                aria-label={amostra.nome}
+                                aria-pressed={ativa}
+                                onClick={() => setCor(amostra.hex)}
+                                style={{ backgroundColor: amostra.hex }}
+                                className="flex h-11 w-11 items-center justify-center rounded-full text-white"
+                            >
+                                {ativa && <CheckIcon aria-hidden className="h-5 w-5" />}
+                            </button>
+                        )
+                    })}
+                    <label className="flex h-11 items-center gap-2 text-sm text-default-600">
+                        <input
+                            id="cor_primaria"
+                            name="cor_primaria"
+                            type="color"
+                            value={cor}
+                            onChange={(e) => setCor(e.target.value)}
+                            aria-label="Escolher outra cor"
+                            className="h-11 w-11 cursor-pointer rounded-full border border-default-200 bg-transparent p-1"
+                        />
+                        Outra cor
+                    </label>
                 </div>
                 {erros.cor_primaria && <p className="text-sm text-danger">{erros.cor_primaria}</p>}
-            </div>
+            </fieldset>
 
             {erroGeral && <p className="text-sm text-danger">{erroGeral}</p>}
             {salvo && <p className="text-sm text-success-600">Loja salva.</p>}
