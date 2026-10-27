@@ -244,6 +244,18 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# E-mails de acesso com código de 6 dígitos ({{ .Token }}) e o link como alternativa.
+# Usuário novo recebe o template "confirmation"; usuário existente, o "magic_link".
+# Os dois precisam do código. No projeto real, o mesmo HTML vai em Authentication >
+# Email Templates (exige SMTP próprio configurado).
+[auth.email.template.magic_link]
+subject = "Seu código de acesso ao cardap.io"
+content_path = "./supabase/templates/codigo.html"
+
+[auth.email.template.confirmation]
+subject = "Seu código de acesso ao cardap.io"
+content_path = "./supabase/templates/codigo.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"
