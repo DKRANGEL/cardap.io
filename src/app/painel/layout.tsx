@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import { Providers } from './providers'
+import { ProvidersHeroUI } from '@/components/providers-heroui'
 
 export default function PainelLayout({ children }: { children: ReactNode }) {
-    return <Providers>{children}</Providers>
+    return <ProvidersHeroUI>{children}</ProvidersHeroUI>
 }
