@@ -13,5 +13,5 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    redirect('/painel/login?erro=link_invalido')
+    redirect('/entrar?erro=link_invalido')
 }

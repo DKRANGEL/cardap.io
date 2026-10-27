@@ -10,7 +10,7 @@ export function LogoutButton() {
 
     const sair = async () => {
         await supabase.auth.signOut()
-        router.push('/painel/login')
+        router.push('/entrar')
         router.refresh()
     }
 

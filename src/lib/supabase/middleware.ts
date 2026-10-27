@@ -25,9 +25,19 @@ export async function updateSession(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user && request.nextUrl.pathname.startsWith('/painel') && request.nextUrl.pathname !== '/painel/login') {
+    const { pathname } = request.nextUrl
+
+    if (!user && pathname.startsWith('/painel')) {
         const url = request.nextUrl.clone()
-        url.pathname = '/painel/login'
+        url.pathname = '/entrar'
+        url.search = ''
+        return NextResponse.redirect(url)
+    }
+
+    if (user && pathname === '/entrar') {
+        const url = request.nextUrl.clone()
+        url.pathname = '/painel'
+        url.search = ''
         return NextResponse.redirect(url)
     }
 
