@@ -6,7 +6,7 @@ import { LojaForm } from './loja-form'
 export default async function LojaPage() {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) redirect('/painel/login')
+    if (!user) redirect('/entrar')
 
     const { data: loja } = await supabase
         .from('lojas')
