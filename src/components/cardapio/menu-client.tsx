@@ -1,307 +1,191 @@
 'use client'
 
-import { SearchIcon, ShoppingCartIcon, PlusIcon, MinusIcon, ImageOffIcon, QrCodeIcon } from 'lucide-react'
-import { useMemo, useState, type CSSProperties } from 'react'
-import NextLink from 'next/link'
-import {
-    Navbar, NavbarBrand, NavbarContent, NavbarItem,
-    Button, Card, CardBody, Image, Input,
-    Chip, Badge, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter,
-    Divider, ScrollShadow
-} from '@heroui/react'
+import { SearchIcon } from 'lucide-react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Categoria, Loja, Produto } from '@/lib/types'
+import { BarraPedido } from './barra-pedido'
+import { Cabecalho } from './cabecalho'
+import { CartaoProduto } from './cartao-produto'
+import { ChipsCategoria } from './chips-categoria'
+import { FolhaPedido } from './folha-pedido'
 
-const toBRL = (centavos: number) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(centavos / 100)
-
-const BOTAO_LOJA = 'bg-[var(--loja)] text-[var(--loja-contraste)] data-[hover=true]:opacity-90'
+const TRAVA_APOS_CLIQUE_MS = 700
 
 type Props = {
     loja: Loja
     categorias: Categoria[]
     produtos: Produto[]
-    estiloLoja: CSSProperties
 }
 
-export function MenuClient({ loja, categorias, produtos, estiloLoja }: Props) {
-    const [query, setQuery] = useState('')
-    const [cart, setCart] = useState<Record<string, number>>({})
-    const [cartOpen, setCartOpen] = useState(false)
+export function MenuClient({ loja, categorias, produtos }: Props) {
+    const [busca, setBusca] = useState('')
+    const [carrinho, setCarrinho] = useState<Record<string, number>>({})
+    const [folhaAberta, setFolhaAberta] = useState(false)
+    const [categoriaAtiva, setCategoriaAtiva] = useState<string | null>(null)
+    const travado = useRef(false)
+    const timerTrava = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-    const grouped = useMemo(() => {
-        const q = query.trim().toLowerCase()
-        const map = new Map<string, Produto[]>()
+    const porCategoria = useMemo(() => {
+        const termo = busca.trim().toLowerCase()
+        const mapa = new Map<string, Produto[]>()
         for (const p of produtos) {
             if (!p.categoria_id) continue
-            const matches = !q || p.nome.toLowerCase().includes(q) || p.descricao?.toLowerCase().includes(q)
-            if (matches) {
-                const arr = map.get(p.categoria_id) ?? []
-                arr.push(p)
-                map.set(p.categoria_id, arr)
-            }
+            const combina = !termo || p.nome.toLowerCase().includes(termo) || p.descricao?.toLowerCase().includes(termo)
+            if (!combina) continue
+            mapa.set(p.categoria_id, [...(mapa.get(p.categoria_id) ?? []), p])
         }
-        return map
-    }, [query, produtos])
+        return mapa
+    }, [busca, produtos])
 
-    const totalItems = Object.values(cart).reduce((a, b) => a + b, 0)
-    const totalPrice = Object.entries(cart).reduce((sum, [id, qty]) => {
-        const item = produtos.find(p => p.id === id)
-        return sum + (item ? item.preco_centavos * qty : 0)
-    }, 0)
+    const categoriasVisiveis = categorias.filter((c) => (porCategoria.get(c.id)?.length ?? 0) > 0)
+    const idsVisiveis = categoriasVisiveis.map((c) => c.id).join(',')
+    const ativaId = categoriasVisiveis.some((c) => c.id === categoriaAtiva)
+        ? categoriaAtiva
+        : (categoriasVisiveis[0]?.id ?? null)
 
-    const add = (id: string) => setCart(c => ({ ...c, [id]: (c[id] || 0) + 1 }))
-    const sub = (id: string) =>
-        setCart(c => {
-            const next = { ...c }
-            if (!next[id]) return c
-            next[id] -= 1
-            if (next[id] <= 0) delete next[id]
-            return next
+    useEffect(() => {
+        const ids = idsVisiveis.split(',').filter(Boolean)
+        if (ids.length === 0) return
+
+        const naFaixa = new Set<string>()
+        const primeiraNaFaixa = () => ids.find((id) => naFaixa.has(id))
+        // A última seção costuma ser curta demais para chegar à faixa do observador,
+        // então no fim da página ela vira a ativa por regra própria.
+        let noFim = false
+
+        const observador = new IntersectionObserver(
+            (entradas) => {
+                for (const entrada of entradas) {
+                    const id = entrada.target.id.replace('cat-', '')
+                    if (entrada.isIntersecting) naFaixa.add(id)
+                    else naFaixa.delete(id)
+                }
+                if (travado.current || noFim) return
+                const primeira = primeiraNaFaixa()
+                if (primeira) setCategoriaAtiva(primeira)
+            },
+            { rootMargin: '-130px 0px -70% 0px' },
+        )
+
+        for (const id of ids) {
+            const secao = document.getElementById(`cat-${id}`)
+            if (secao) observador.observe(secao)
+        }
+
+        const aoRolar = () => {
+            if (travado.current) return
+            const agoraNoFim = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4
+            if (agoraNoFim === noFim) return
+            noFim = agoraNoFim
+            const alvo = noFim ? ids[ids.length - 1] : primeiraNaFaixa()
+            if (alvo) setCategoriaAtiva(alvo)
+        }
+        window.addEventListener('scroll', aoRolar, { passive: true })
+
+        return () => {
+            observador.disconnect()
+            window.removeEventListener('scroll', aoRolar)
+        }
+    }, [idsVisiveis])
+
+    useEffect(() => () => clearTimeout(timerTrava.current), [])
+
+    const irParaCategoria = (id: string) => {
+        setCategoriaAtiva(id)
+        travado.current = true
+        clearTimeout(timerTrava.current)
+        timerTrava.current = setTimeout(() => {
+            travado.current = false
+        }, TRAVA_APOS_CLIQUE_MS)
+
+        const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        document.getElementById(`cat-${id}`)?.scrollIntoView({
+            behavior: reduzirMovimento ? 'auto' : 'smooth',
+            block: 'start',
         })
-
-    const scrollToCategoria = (categoriaId: string) => {
-        document.getElementById(`cat-${categoriaId}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
 
+    const itens = Object.entries(carrinho).flatMap(([id, qtd]) => {
+        const produto = produtos.find((p) => p.id === id)
+        return produto ? [{ produto, qtd }] : []
+    })
+    const totalItens = itens.reduce((soma, item) => soma + item.qtd, 0)
+    const total = itens.reduce((soma, item) => soma + item.produto.preco_centavos * item.qtd, 0)
+
+    const adicionar = (id: string) => setCarrinho((c) => ({ ...c, [id]: (c[id] ?? 0) + 1 }))
+    const remover = (id: string) =>
+        setCarrinho((c) => {
+            if (!c[id]) return c
+            const proximo = { ...c }
+            proximo[id] -= 1
+            if (proximo[id] <= 0) delete proximo[id]
+            return proximo
+        })
+
     return (
-        <div className="min-h-dvh bg-background text-foreground" style={estiloLoja}>
-            <Navbar isBordered className="sticky top-0 z-50 bg-background/80 backdrop-blur-md">
-                <NavbarBrand className="gap-2">
-                    {loja.logo_url ? (
-                        <Image alt={loja.nome} src={loja.logo_url} width={28} height={28} radius="sm" />
-                    ) : (
-                        <div
-                            aria-hidden
-                            className="flex h-7 w-7 items-center justify-center rounded-md bg-[var(--loja)] text-xs font-bold text-[var(--loja-contraste)]">
-                            {loja.nome.charAt(0).toUpperCase()}
-                        </div>
-                    )}
-                    <div className="flex flex-col leading-tight">
-                        <span className="text-sm font-semibold">{loja.nome}</span>
-                        <span className="text-xs text-default-500">Aberto • Retirada / Entrega</span>
-                    </div>
-                </NavbarBrand>
-                <NavbarContent justify="end">
-                    <NavbarItem>
-                        <Button
-                            as={NextLink}
-                            href={`/${loja.slug}/qr`}
-                            isIconOnly
-                            radius="full"
-                            variant="flat"
-                            aria-label="Ver QR code do cardápio"
-                        >
-                            <QrCodeIcon />
-                        </Button>
-                    </NavbarItem>
-                    <NavbarItem>
-                        <Badge classNames={{ badge: 'bg-[var(--loja)] text-[var(--loja-contraste)] border-0' }}
-                               content={totalItems} isInvisible={!totalItems} shape="circle">
-                            <Button
-                                isIconOnly
-                                radius="full"
-                                variant="flat"
-                                aria-label="Abrir carrinho"
-                                onPress={() => setCartOpen(true)}
-                            >
-                                <ShoppingCartIcon />
-                            </Button>
-                        </Badge>
-                    </NavbarItem>
-                </NavbarContent>
-            </Navbar>
+        <div className="mx-auto min-h-dvh w-full max-w-[520px] bg-superficie text-tinta">
+            <Cabecalho
+                nome={loja.nome}
+                logoUrl={loja.logo_url}
+                totalItens={totalItens}
+                onAbrirPedido={() => setFolhaAberta(true)}
+            />
 
-            <div className="p-4 pb-2">
-                <Input value={query} onValueChange={setQuery} placeholder="Buscar no cardápio"
-                       startContent={<SearchIcon className="text-2xl text-default-400 pointer-events-none shrink-0" />}
-                       variant="bordered" />
-            </div>
-
-            <div className="px-4">
-                <ScrollShadow hideScrollBar orientation="horizontal" className="max-w-full">
-                    <div className="flex gap-2 pb-3 pt-3 w-max">
-                        {categorias.map((c) => (
-                            <Chip
-                                key={c.id}
-                                color="primary"
-                                variant="flat"
-                                className="cursor-pointer"
-                                onClick={() => scrollToCategoria(c.id)}
-                            >
-                                {c.nome}
-                            </Chip>
-                        ))}
-                    </div>
-                </ScrollShadow>
-            </div>
-
-            <div className="flex flex-col gap-6 py-2">
-                {categorias.map((categoria) => {
-                    const items = grouped.get(categoria.id) ?? []
-                    if (items.length === 0) return null
-
-                    return (
-                        <section key={categoria.id} id={`cat-${categoria.id}`} className="scroll-mt-20">
-                            <div className="flex items-center justify-between px-4">
-                                <h2 className="text-sm font-semibold tracking-wide uppercase text-default-600">{categoria.nome}</h2>
-                            </div>
-
-                            <ScrollShadow orientation="horizontal" hideScrollBar className="px-4 pt-2 pb-4">
-                                <div className="flex gap-3 w-max snap-x snap-mandatory">
-                                    {items.map((p) => (
-                                        <Card isBlurred key={p.id} shadow="sm"
-                                              className="snap-start w-[85vw] sm:w-[360px] shrink-0 bg-background/60 rounded-2xl border border-default-100 hover:shadow-lg transition-shadow">
-                                            <CardBody className="p-4">
-                                                <div className="flex gap-4 items-start">
-                                                    {p.foto_url ? (
-                                                        <Image
-                                                            alt={p.nome}
-                                                            src={p.foto_url}
-                                                            width={96}
-                                                            className="h-20 w-20 object-cover rounded-2xl shrink-0"
-                                                        />
-                                                    ) : (
-                                                        <div
-                                                            aria-hidden
-                                                            className="flex h-20 w-20 items-center justify-center rounded-2xl bg-default-100 shrink-0">
-                                                            <ImageOffIcon className="h-6 w-6 text-default-400" />
-                                                        </div>
-                                                    )}
-                                                    <div className="flex flex-col flex-1 min-w-0">
-                                                        <span
-                                                            className="text-[11px] uppercase tracking-wide text-[var(--loja-tinta)] font-semibold">
-                                                            {categoria.nome}
-                                                        </span>
-                                                        <h3 className="mt-1 text-base font-extrabold leading-tight line-clamp-2">
-                                                            {p.nome}
-                                                        </h3>
-                                                        {p.descricao && (
-                                                            <p className="text-[11px] text-default-500 line-clamp-2 mt-1">
-                                                                {p.descricao}
-                                                            </p>
-                                                        )}
-                                                        <div className="mt-3 flex items-center justify-between">
-                                                            <span className="num text-lg font-extrabold text-[var(--loja-tinta)]">
-                                                                {toBRL(p.preco_centavos)}
-                                                            </span>
-                                                            {cart[p.id] ? (
-                                                                <div className="flex items-center gap-2">
-                                                                    <Button
-                                                                        isIconOnly
-                                                                        size="sm"
-                                                                        variant="flat"
-                                                                        aria-label="Diminuir"
-                                                                        onPress={() => sub(p.id)}
-                                                                    >
-                                                                        <MinusIcon className="w-5 h-5" />
-                                                                    </Button>
-                                                                    <span
-                                                                        className="min-w-6 text-center text-xs font-medium">
-                                                                        {cart[p.id]}
-                                                                    </span>
-                                                                    <Button
-                                                                        isIconOnly
-                                                                        size="sm"
-                                                                        variant="flat"
-                                                                        aria-label="Aumentar"
-                                                                        onPress={() => add(p.id)}
-                                                                    >
-                                                                        <PlusIcon className="w-5 h-5" />
-                                                                    </Button>
-                                                                </div>
-                                                            ) : (
-                                                                <Button
-                                                                    isIconOnly
-                                                                    size="sm"
-                                                                    radius="full"
-                                                                    className={BOTAO_LOJA}
-                                                                    aria-label="Adicionar"
-                                                                    onPress={() => add(p.id)}
-                                                                >
-                                                                    <PlusIcon className="w-4 h-4" />
-                                                                </Button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </CardBody>
-                                        </Card>
-                                    ))}
-                                </div>
-                            </ScrollShadow>
-
-                            <Divider className="mt-4" />
-                        </section>
-                    )
-                })}
-            </div>
-
-            {totalItems > 0 && (
-                <div className="fixed inset-x-0 bottom-0 z-50 p-3">
-                    <div className="mx-auto max-w-md sm:max-w-xl">
-                        <Button className={BOTAO_LOJA} size="lg" radius="full" onPress={() => setCartOpen(true)}>
-                            {totalItems} item{totalItems > 1 ? 's' : ''} • {toBRL(totalPrice)} — Ver carrinho
-                        </Button>
-                    </div>
+            <div className="px-4 py-3">
+                <div className="relative">
+                    <SearchIcon aria-hidden
+                                className="pointer-events-none absolute top-1/2 left-3.5 h-5 w-5 -translate-y-1/2 text-carvao-500" />
+                    <input
+                        type="search"
+                        value={busca}
+                        onChange={(e) => setBusca(e.target.value)}
+                        placeholder="Buscar no cardápio"
+                        aria-label="Buscar no cardápio"
+                        enterKeyHint="search"
+                        autoComplete="off"
+                        className="h-12 w-full appearance-none rounded-md border border-borda bg-superficie-sutil pr-4 pl-11 text-base text-tinta placeholder:text-tinta-suave focus:border-borda-forte"
+                    />
                 </div>
-            )}
+            </div>
 
-            <Modal isOpen={cartOpen} onOpenChange={setCartOpen} scrollBehavior="inside">
-                <ModalContent>
-                    {(onClose) => (
-                        <div className="contents" style={estiloLoja}>
-                            <ModalHeader>Carrinho</ModalHeader>
-                            <ModalBody>
-                                {totalItems === 0 && <p className="text-default-500">Seu carrinho está vazio.</p>}
-                                {totalItems > 0 && (
-                                    <div className="flex flex-col gap-3">
-                                        {Object.entries(cart).map(([id, qty]) => {
-                                            const p = produtos.find(x => x.id === id)!
-                                            return (
-                                                <div key={id} className="flex items-center gap-3">
-                                                    {p.foto_url ? (
-                                                        <Image alt={p.nome} src={p.foto_url} width={56} height={56}
-                                                               radius="sm" />
-                                                    ) : (
-                                                        <div
-                                                            aria-hidden
-                                                            className="flex h-14 w-14 items-center justify-center rounded-md bg-default-100 shrink-0">
-                                                            <ImageOffIcon className="h-5 w-5 text-default-400" />
-                                                        </div>
-                                                    )}
-                                                    <div className="flex-1">
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-sm font-medium">{p.nome}</span>
-                                                            <span className="text-sm">{toBRL(p.preco_centavos * qty)}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <Button size="sm" variant="flat"
-                                                                    onPress={() => sub(id)}>-</Button>
-                                                            <span className="text-sm w-6 text-center">{qty}</span>
-                                                            <Button size="sm" variant="flat"
-                                                                    onPress={() => add(id)}>+</Button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                        <Divider />
-                                        <div className="flex items-center justify-between text-sm">
-                                            <span>Total</span>
-                                            <span className="font-semibold">{toBRL(totalPrice)}</span>
-                                        </div>
-                                    </div>
-                                )}
-                            </ModalBody>
-                            <ModalFooter>
-                                <Button variant="light" onPress={() => (setCart({}), onClose())}>Limpar</Button>
-                                <Button className={BOTAO_LOJA} onPress={() => alert('Seguir para checkout…')}>Finalizar
-                                    pedido</Button>
-                            </ModalFooter>
-                        </div>
-                    )}
-                </ModalContent>
-            </Modal>
+            <ChipsCategoria categorias={categoriasVisiveis} ativaId={ativaId} onSelecionar={irParaCategoria} />
+
+            <main className={totalItens > 0 ? 'pb-[calc(96px+env(safe-area-inset-bottom))]' : 'pb-8'}>
+                {categoriasVisiveis.map((categoria) => (
+                    <section key={categoria.id} id={`cat-${categoria.id}`} aria-labelledby={`titulo-${categoria.id}`}
+                             className="scroll-mt-32 px-4 pt-5">
+                        <h2 id={`titulo-${categoria.id}`} className="text-[17px] leading-[22px] font-bold">
+                            {categoria.nome}
+                        </h2>
+                        <ul className="mt-3 flex flex-col gap-3">
+                            {(porCategoria.get(categoria.id) ?? []).map((produto) => (
+                                <CartaoProduto
+                                    key={produto.id}
+                                    produto={produto}
+                                    qtd={carrinho[produto.id] ?? 0}
+                                    onAdd={() => adicionar(produto.id)}
+                                    onSub={() => remover(produto.id)}
+                                />
+                            ))}
+                        </ul>
+                    </section>
+                ))}
+            </main>
+
+            {totalItens > 0 && <BarraPedido totalItens={totalItens} total={total} onAbrir={() => setFolhaAberta(true)} />}
+
+            <FolhaPedido
+                aberto={folhaAberta}
+                onFechar={() => setFolhaAberta(false)}
+                itens={itens}
+                total={total}
+                onAdd={adicionar}
+                onSub={remover}
+                onLimpar={() => {
+                    setCarrinho({})
+                    setFolhaAberta(false)
+                }}
+            />
         </div>
     )
 }

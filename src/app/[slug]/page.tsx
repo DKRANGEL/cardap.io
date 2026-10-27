@@ -71,11 +71,8 @@ export default async function CardapioPage({ params }: Props) {
     } as CSSProperties
 
     return (
-        <MenuClient
-            loja={data.loja}
-            categorias={data.categorias}
-            produtos={data.produtos}
-            estiloLoja={estiloLoja}
-        />
+        <div style={estiloLoja}>
+            <MenuClient loja={data.loja} categorias={data.categorias} produtos={data.produtos} />
+        </div>
     )
 }
