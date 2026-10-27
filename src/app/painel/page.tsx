@@ -1,41 +1,114 @@
-import { createClient } from '@/lib/supabase/server'
-import { BotaoLink } from '@/components/botao-link'
-import { LogoutButton } from './logout-button'
+import Link from 'next/link'
+import { CheckIcon, ChevronRightIcon, ExternalLinkIcon } from 'lucide-react'
+import { carregarPainel } from '@/lib/painel-dados'
+import { calcularRegua, type Passo } from '@/lib/regua-publicacao'
 
-export default async function PainelPage() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+export const metadata = { title: 'Início — cardap.io' }
 
-    const { data: loja } = await supabase
-        .from('lojas')
-        .select('slug, nome')
-        .eq('owner_id', user!.id)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle()
+function MarcaDoPasso({ numero, pronto }: { numero: number; pronto: boolean }) {
+    if (pronto) {
+        return (
+            <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sucesso text-carvao-0">
+                <CheckIcon className="h-[18px] w-[18px]" strokeWidth={3} />
+            </span>
+        )
+    }
+    return (
+        <span aria-hidden
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-borda-forte text-sm font-bold text-tinta-media">
+            {numero}
+        </span>
+    )
+}
+
+function LinhaDoPasso({ passo, numero, atual }: { passo: Passo; numero: number; atual: boolean }) {
+    const corpo = (
+        <>
+            <MarcaDoPasso numero={numero} pronto={passo.pronto} />
+            <span className="min-w-0 flex-1">
+                <span className="block text-[17px] leading-[22px] font-bold">
+                    {passo.titulo}
+                    {passo.pronto && <span className="sr-only"> (feito)</span>}
+                </span>
+                <span className="mt-0.5 block text-sm leading-5 text-tinta-media">{passo.detalhe}</span>
+            </span>
+            {!passo.pronto && <ChevronRightIcon aria-hidden className="h-5 w-5 shrink-0 text-tinta-suave" />}
+        </>
+    )
+
+    const base = 'flex min-h-[64px] items-center gap-3 rounded-lg border p-3'
+
+    if (passo.pronto) {
+        return <li className={`${base} border-borda bg-superficie-sutil`}>{corpo}</li>
+    }
 
     return (
-        <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col gap-6 p-6 bg-background text-foreground">
-            <div className="flex flex-col gap-1">
-                <h1 className="text-lg font-bold">Painel do lojista</h1>
-                <p className="text-sm text-default-500">Logado como {user?.email}</p>
-            </div>
+        <li>
+            <Link
+                href={passo.href}
+                aria-current={atual ? 'step' : undefined}
+                className={`${base} ${atual ? 'border-acao bg-acao-suave' : 'border-borda bg-superficie'}`}
+            >
+                {corpo}
+            </Link>
+        </li>
+    )
+}
 
-            {loja ? (
-                <div className="flex flex-col gap-3 rounded-2xl border border-default-200 p-4">
-                    <p className="font-semibold">{loja.nome}</p>
-                    <BotaoLink href="/painel/loja" principal>Editar loja</BotaoLink>
-                    <BotaoLink href={`/${loja.slug}`}>Ver cardápio</BotaoLink>
-                    <BotaoLink href={`/${loja.slug}/qr`}>Ver QR code</BotaoLink>
-                </div>
+export default async function PainelPage() {
+    const { user, loja, totalCategorias, totalProdutos } = await carregarPainel()
+    const regua = calcularRegua({ loja, totalCategorias, totalProdutos })
+
+    return (
+        <main className="mx-auto flex min-h-dvh w-full max-w-[448px] flex-col gap-6 px-4 pt-6 pb-6">
+            {regua.completa && loja ? (
+                <>
+                    <header className="flex flex-col gap-1">
+                        <h1 className="text-xl leading-[26px] font-bold tracking-tight">{loja.nome}</h1>
+                        <p className="text-[15px] leading-[22px] text-tinta-media">Seu cardápio está no ar.</p>
+                    </header>
+
+                    <section aria-label="Situação da loja" className="flex flex-col gap-4 rounded-lg border border-borda p-4">
+                        <dl className="grid grid-cols-2 gap-4">
+                            <div>
+                                <dt className="text-sm leading-5 text-tinta-media">Categorias</dt>
+                                <dd className="text-[22px] leading-[26px] font-extrabold tabular-nums">{totalCategorias}</dd>
+                            </div>
+                            <div>
+                                <dt className="text-sm leading-5 text-tinta-media">Produtos</dt>
+                                <dd className="text-[22px] leading-[26px] font-extrabold tabular-nums">{totalProdutos}</dd>
+                            </div>
+                        </dl>
+                        <p className="text-sm leading-5 break-all text-tinta-media">cardap.io/{loja.slug}</p>
+                        <Link
+                            href={`/${loja.slug}`}
+                            className="flex h-[52px] items-center justify-center gap-2 rounded-full bg-acao text-base font-semibold text-acao-contraste"
+                        >
+                            Ver meu cardápio
+                            <ExternalLinkIcon aria-hidden className="h-5 w-5" />
+                        </Link>
+                    </section>
+                </>
             ) : (
-                <div className="flex flex-col gap-3 rounded-2xl border border-default-200 p-4">
-                    <p className="text-sm text-default-500">Você ainda não criou sua loja.</p>
-                    <BotaoLink href="/painel/loja" principal>Criar minha loja</BotaoLink>
-                </div>
+                <>
+                    <header className="flex flex-col gap-1">
+                        <h1 className="text-xl leading-[26px] font-bold tracking-tight">
+                            {loja ? `Vamos publicar ${loja.nome}` : 'Vamos montar seu cardápio'}
+                        </h1>
+                        <p className="text-[15px] leading-[22px] text-tinta-media">
+                            {regua.concluidos} de {regua.passos.length} passos feitos.
+                        </p>
+                    </header>
+
+                    <ol aria-label="Passos pra publicar o cardápio" className="flex flex-col gap-3">
+                        {regua.passos.map((passo, i) => (
+                            <LinhaDoPasso key={passo.id} passo={passo} numero={i + 1} atual={passo.id === regua.atual} />
+                        ))}
+                    </ol>
+                </>
             )}
 
-            <LogoutButton />
-        </div>
+            <p className="mt-auto text-sm leading-5 break-all text-tinta-suave">Você entrou como {user.email}.</p>
+        </main>
     )
 }
