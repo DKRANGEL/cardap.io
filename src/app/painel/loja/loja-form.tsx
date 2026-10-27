@@ -214,9 +214,6 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
                         Ver meu cardápio
                     </Button>
                 )}
-                <Button as={NextLink} href="/painel" variant="light" size="lg" className="min-h-12">
-                    Voltar ao painel
-                </Button>
             </div>
         </form>
     )
