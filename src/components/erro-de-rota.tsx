@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { TriangleAlertIcon, WifiOffIcon } from 'lucide-react'
 import { BOTAO_ESTADO, BOTAO_ESTADO_SECUNDARIO, Estado } from './estado'
 
@@ -14,16 +15,29 @@ type Props = {
 }
 
 export function ErroDeRota({ error, reset, titulo, texto, saida }: Props) {
+    const router = useRouter()
+    const [tentando, startTransition] = useTransition()
+    const [semInternet, setSemInternet] = useState(false)
+
     useEffect(() => {
         console.error(error)
+        setSemInternet(!navigator.onLine)
     }, [error])
 
-    const deRede = /fetch failed|network|failed to fetch/i.test(error.message)
+    // reset() sozinho só re-renderiza no cliente; para erro de Server Component é preciso buscar de novo.
+    const tentarDeNovo = () =>
+        startTransition(() => {
+            router.refresh()
+            reset()
+        })
 
     return (
-        <Estado tela Icone={deRede ? WifiOffIcon : TriangleAlertIcon} titulo={titulo}
-                texto={deRede ? 'Parece um problema de conexão. Confira a internet e tente de novo.' : texto}>
-            <button type="button" onClick={reset} className={BOTAO_ESTADO}>Tentar de novo</button>
+        <Estado tela Icone={semInternet ? WifiOffIcon : TriangleAlertIcon} titulo={titulo}
+                texto={semInternet ? 'Parece que você está sem internet. Confira a conexão e tente de novo.' : texto}>
+            <button type="button" onClick={tentarDeNovo} disabled={tentando}
+                    className={`${BOTAO_ESTADO} disabled:opacity-60`}>
+                {tentando ? 'Tentando…' : 'Tentar de novo'}
+            </button>
             {saida && <Link href={saida.href} className={BOTAO_ESTADO_SECUNDARIO}>{saida.rotulo}</Link>}
         </Estado>
     )
