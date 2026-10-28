@@ -8,6 +8,9 @@ export async function createClient() {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
+            // Sem refazer sozinho: o postgrest-js espera ~7 s antes de desistir, e o usuário ficaria
+            // olhando o skeleton. Falhar logo deixa o botão "Tentar de novo" cuidar da nova tentativa.
+            db: { retry: false },
             cookies: {
                 getAll() {
                     return cookieStore.getAll()
