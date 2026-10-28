@@ -46,8 +46,13 @@ async function getLoja(slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const data = await getLoja(slug).catch(() => null)
-    if (!data) return {}
+    let data
+    try {
+        data = await getLoja(slug)
+    } catch {
+        return {}
+    }
+    if (!data) return { title: 'Cardápio não encontrado — cardap.io' }
 
     return {
         title: data.loja.nome,

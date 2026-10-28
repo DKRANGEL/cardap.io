@@ -32,8 +32,13 @@ async function getCardapioUrl(slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const loja = await getLoja(slug).catch(() => null)
-    if (!loja) return {}
+    let loja
+    try {
+        loja = await getLoja(slug)
+    } catch {
+        return {}
+    }
+    if (!loja) return { title: 'Cardápio não encontrado — cardap.io' }
 
     return { title: `QR code — ${loja.nome}` }
 }
