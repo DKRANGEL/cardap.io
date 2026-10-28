@@ -10,12 +10,14 @@ type Props = {
 }
 
 export function Estado({ Icone, titulo, texto, children, tela = false }: Props) {
+    const Titulo = tela ? 'h1' : 'h2'
+
     const conteudo = (
         <section className="mx-auto flex w-full max-w-[360px] flex-col items-center gap-3 px-4 py-10 text-center">
             <span aria-hidden className="flex h-12 w-12 items-center justify-center rounded-full bg-superficie-marcada">
                 <Icone className="h-6 w-6 text-tinta-media" />
             </span>
-            <h1 className="text-[17px] leading-[22px] font-bold">{titulo}</h1>
+            <Titulo className="text-[17px] leading-[22px] font-bold">{titulo}</Titulo>
             <p className="text-[15px] leading-[22px] text-tinta-media">{texto}</p>
             {children && <div className="mt-2 flex w-full flex-col gap-2">{children}</div>}
         </section>
