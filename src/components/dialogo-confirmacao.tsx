@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
+import { useEffect, useRef, type ReactNode, type RefObject } from 'react'
 import { AlertCircleIcon } from 'lucide-react'
 
 type Props = {
@@ -13,14 +13,17 @@ type Props = {
     onConfirmar: () => void
     pendente?: boolean
     erro?: string | null
+    devolverFocoA?: RefObject<HTMLElement | null>
 }
 
 // <dialog> nativo: já prende o foco, fecha com Escape, deixa o fundo inerte e devolve o foco
 // ao botão que o abriu. Sem JS de biblioteca, de propósito.
 export function DialogoConfirmacao({
     aberto, onFechar, titulo, children, rotuloConfirmar, rotuloCancelar, onConfirmar, pendente = false, erro,
+    devolverFocoA,
 }: Props) {
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const cancelarRef = useRef<HTMLButtonElement>(null)
 
     useEffect(() => {
         const dialog = dialogRef.current
@@ -29,12 +32,16 @@ export function DialogoConfirmacao({
         if (aberto && !dialog.open) {
             dialog.showModal()
             document.body.style.overflow = 'hidden'
+            // O navegador focaria o primeiro botão, que é o destrutivo. O autoFocus do React não vira o
+            // atributo autofocus que o <dialog> respeita, então o foco seguro é dado aqui, de forma explícita.
+            cancelarRef.current?.focus()
         }
         if (!aberto && dialog.open) {
             dialog.close()
             document.body.style.overflow = ''
+            devolverFocoA?.current?.focus()
         }
-    }, [aberto])
+    }, [aberto, devolverFocoA])
 
     useEffect(() => () => {
         document.body.style.overflow = ''
@@ -71,7 +78,7 @@ export function DialogoConfirmacao({
                             className="flex h-[52px] w-full items-center justify-center rounded-full bg-perigo-suave text-base font-semibold text-perigo disabled:opacity-60">
                         {pendente ? 'Excluindo…' : rotuloConfirmar}
                     </button>
-                    <button type="button" autoFocus onClick={onFechar} disabled={pendente}
+                    <button type="button" ref={cancelarRef} onClick={onFechar} disabled={pendente}
                             className="flex h-12 w-full items-center justify-center rounded-full text-base font-semibold text-tinta disabled:opacity-60">
                         {rotuloCancelar}
                     </button>
