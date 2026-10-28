@@ -31,7 +31,6 @@ export default async function LojaPage() {
             </header>
 
             <LojaForm
-                key={loja?.id ?? 'nova'}
                 loja={loja}
                 whatsappInicial={loja ? whatsappParaExibicao(loja.whatsapp) : ''}
             />

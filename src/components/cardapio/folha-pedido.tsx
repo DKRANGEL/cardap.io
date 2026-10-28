@@ -110,7 +110,14 @@ export function FolhaPedido({ aberto, onFechar, itens, total, onAdd, onSub, onLi
 
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4">
                     {itens.length === 0 ? (
-                        <p className="py-6 text-[15px] leading-[22px] text-tinta-media">Seu pedido está vazio.</p>
+                        <div className="flex flex-col items-center gap-3 py-8 text-center">
+                            <p className="text-[17px] leading-[22px] font-bold">Seu pedido está vazio</p>
+                            <p className="text-[15px] leading-[22px] text-tinta-media">Adicione itens do cardápio pra continuar.</p>
+                            <button type="button" onClick={onFechar}
+                                    className="mt-1 h-[52px] w-full rounded-full bg-superficie-marcada text-base font-semibold">
+                                Voltar ao cardápio
+                            </button>
+                        </div>
                     ) : (
                         <ul className="flex flex-col divide-y divide-borda">
                             {itens.map(({ produto, qtd }) => (

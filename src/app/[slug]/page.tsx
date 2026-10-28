@@ -14,16 +14,17 @@ type Props = {
 async function getLoja(slug: string) {
     const supabase = await createClient()
 
-    const { data: loja } = await supabase
+    const { data: loja, error } = await supabase
         .from('lojas')
         .select('id, slug, nome, whatsapp, cor_primaria, cor_contraste, cor_tinta, logo_url')
         .eq('slug', slug)
         .eq('ativo', true)
         .maybeSingle()
 
+    if (error) throw error
     if (!loja) return null
 
-    const [{ data: categorias }, { data: produtos }] = await Promise.all([
+    const [categoriasRes, produtosRes] = await Promise.all([
         supabase
             .from('categorias')
             .select('id, nome, ordem')
@@ -37,13 +38,21 @@ async function getLoja(slug: string) {
             .order('ordem', { ascending: true }),
     ])
 
-    return { loja, categorias: categorias ?? [], produtos: produtos ?? [] }
+    if (categoriasRes.error) throw categoriasRes.error
+    if (produtosRes.error) throw produtosRes.error
+
+    return { loja, categorias: categoriasRes.data ?? [], produtos: produtosRes.data ?? [] }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const data = await getLoja(slug)
-    if (!data) return {}
+    let data
+    try {
+        data = await getLoja(slug)
+    } catch {
+        return {}
+    }
+    if (!data) return { title: 'Cardápio não encontrado — cardap.io' }
 
     return {
         title: data.loja.nome,

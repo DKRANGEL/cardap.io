@@ -12,13 +12,14 @@ type Props = {
 async function getLoja(slug: string) {
     const supabase = await createClient()
 
-    const { data: loja } = await supabase
+    const { data: loja, error } = await supabase
         .from('lojas')
         .select('nome, slug')
         .eq('slug', slug)
         .eq('ativo', true)
         .maybeSingle()
 
+    if (error) throw error
     return loja
 }
 
@@ -31,8 +32,13 @@ async function getCardapioUrl(slug: string) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params
-    const loja = await getLoja(slug)
-    if (!loja) return {}
+    let loja
+    try {
+        loja = await getLoja(slug)
+    } catch {
+        return {}
+    }
+    if (!loja) return { title: 'Cardápio não encontrado — cardap.io' }
 
     return { title: `QR code — ${loja.nome}` }
 }

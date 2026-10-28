@@ -14,7 +14,7 @@ export async function carregarPainel() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/entrar')
 
-    const { data: loja } = await supabase
+    const { data: loja, error } = await supabase
         .from('lojas')
         .select('id, slug, nome, whatsapp, divulgado_em')
         .eq('owner_id', user.id)
@@ -22,12 +22,16 @@ export async function carregarPainel() {
         .limit(1)
         .maybeSingle<LojaDoPainel>()
 
+    if (error) throw error
     if (!loja) return { supabase, user, loja: null, totalCategorias: 0, totalProdutos: 0 }
 
     const [categorias, produtos] = await Promise.all([
         supabase.from('categorias').select('id', { count: 'exact', head: true }).eq('loja_id', loja.id),
         supabase.from('produtos').select('id', { count: 'exact', head: true }).eq('loja_id', loja.id),
     ])
+
+    if (categorias.error) throw categorias.error
+    if (produtos.error) throw produtos.error
 
     return {
         supabase,
