@@ -80,6 +80,7 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
             }
 
             setSlugSalvo(resultado.slug)
+            setSlugEditado(true)
 
             if (logo) {
                 const supabase = createClient()
