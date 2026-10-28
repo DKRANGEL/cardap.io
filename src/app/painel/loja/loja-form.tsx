@@ -71,6 +71,7 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
         setSalvo(false)
 
         startTransition(async () => {
+          try {
             const resultado = await salvarLoja(formData)
             if (!resultado.ok) {
                 setErros(resultado.erros ?? {})
@@ -103,6 +104,9 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
 
             setSalvo(true)
             router.refresh()
+          } catch {
+            setErroGeral('Não deu pra salvar. Confira a conexão e tente de novo.')
+          }
         })
     }
 
