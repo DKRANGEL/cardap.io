@@ -21,8 +21,8 @@ export function Campo({ id, rotulo, erro, dica, ...resto }: Props) {
                 aria-invalid={erro ? true : undefined}
                 aria-describedby={descrito}
                 {...resto}
-                className={`h-12 w-full rounded-md border bg-superficie px-4 text-base text-tinta placeholder:text-tinta-suave focus:border-tinta ${
-                    erro ? 'border-perigo' : 'border-borda-forte'
+                className={`h-12 w-full rounded-md border bg-superficie px-4 text-base text-tinta placeholder:text-tinta-suave ${
+                    erro ? 'border-perigo' : 'border-borda-forte focus:border-tinta'
                 }`}
             />
             {dica && <p id={idDica} className="text-sm leading-5 text-tinta-media">{dica}</p>}
