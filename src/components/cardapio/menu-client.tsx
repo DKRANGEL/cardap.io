@@ -1,6 +1,7 @@
 'use client'
 
-import { SearchIcon } from 'lucide-react'
+import { SearchIcon, SearchXIcon, UtensilsIcon } from 'lucide-react'
+import { BOTAO_ESTADO, Estado } from '@/components/estado'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Categoria, Loja, Produto } from '@/lib/types'
 import { BarraPedido } from './barra-pedido'
@@ -10,6 +11,7 @@ import { ChipsCategoria } from './chips-categoria'
 import { FolhaPedido } from './folha-pedido'
 
 const TRAVA_APOS_CLIQUE_MS = 700
+const SEM_CATEGORIA: Categoria = { id: 'sem-categoria', nome: 'Outros', ordem: Number.MAX_SAFE_INTEGER }
 
 type Props = {
     loja: Loja
@@ -25,19 +27,22 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
     const travado = useRef(false)
     const timerTrava = useRef<ReturnType<typeof setTimeout>>(undefined)
 
+    const termoDaBusca = busca.trim()
+
     const porCategoria = useMemo(() => {
-        const termo = busca.trim().toLowerCase()
+        const termo = termoDaBusca.toLowerCase()
         const mapa = new Map<string, Produto[]>()
         for (const p of produtos) {
-            if (!p.categoria_id) continue
             const combina = !termo || p.nome.toLowerCase().includes(termo) || p.descricao?.toLowerCase().includes(termo)
             if (!combina) continue
-            mapa.set(p.categoria_id, [...(mapa.get(p.categoria_id) ?? []), p])
+            const chave = p.categoria_id ?? SEM_CATEGORIA.id
+            mapa.set(chave, [...(mapa.get(chave) ?? []), p])
         }
         return mapa
-    }, [busca, produtos])
+    }, [termoDaBusca, produtos])
 
-    const categoriasVisiveis = categorias.filter((c) => (porCategoria.get(c.id)?.length ?? 0) > 0)
+    const categoriasComOutros = produtos.some((p) => !p.categoria_id) ? [...categorias, SEM_CATEGORIA] : categorias
+    const categoriasVisiveis = categoriasComOutros.filter((c) => (porCategoria.get(c.id)?.length ?? 0) > 0)
     const idsVisiveis = categoriasVisiveis.map((c) => c.id).join(',')
     const ativaId = categoriasVisiveis.some((c) => c.id === categoriaAtiva)
         ? categoriaAtiva
@@ -131,6 +136,13 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                 onAbrirPedido={() => setFolhaAberta(true)}
             />
 
+            {produtos.length === 0 ? (
+                <main>
+                    <Estado Icone={UtensilsIcon} titulo="Esse cardápio ainda está sendo montado"
+                            texto="A loja ainda não publicou os produtos. Volte daqui a pouco." />
+                </main>
+            ) : (
+            <>
             <div className="px-4 py-3">
                 <div className="relative">
                     <SearchIcon aria-hidden
@@ -151,6 +163,14 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
             <ChipsCategoria categorias={categoriasVisiveis} ativaId={ativaId} onSelecionar={irParaCategoria} />
 
             <main className={totalItens > 0 ? 'pb-[calc(96px+env(safe-area-inset-bottom))]' : 'pb-8'}>
+                {categoriasVisiveis.length === 0 && (
+                    <Estado Icone={SearchXIcon} titulo={`Nada encontrado para “${termoDaBusca}”`}
+                            texto="Tente outra palavra ou veja o cardápio inteiro.">
+                        <button type="button" onClick={() => setBusca('')} className={BOTAO_ESTADO}>
+                            Ver o cardápio inteiro
+                        </button>
+                    </Estado>
+                )}
                 {categoriasVisiveis.map((categoria) => (
                     <section key={categoria.id} id={`cat-${categoria.id}`} aria-labelledby={`titulo-${categoria.id}`}
                              className="scroll-mt-32 px-4 pt-5">
@@ -171,6 +191,8 @@ export function MenuClient({ loja, categorias, produtos }: Props) {
                     </section>
                 ))}
             </main>
+            </>
+            )}
 
             {totalItens > 0 && <BarraPedido totalItens={totalItens} total={total} onAbrir={() => setFolhaAberta(true)} />}
 
