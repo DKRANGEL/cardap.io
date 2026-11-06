@@ -7,10 +7,8 @@ import { AlertCircleIcon } from 'lucide-react'
 import { Campo } from '@/components/campo'
 import { CampoPreco } from '@/components/campo-preco'
 import { SeletorFoto } from '@/components/seletor-foto'
-import { createClient } from '@/lib/supabase/client'
 import { extensaoDoBlob, LADO_FOTO_PRODUTO } from '@/lib/imagem'
-import { urlPublicaDaFoto } from '@/lib/foto-do-bucket'
-import { DESCRICAO_PRODUTO_MAX, NOME_PRODUTO_MAX, type ProdutoCampos } from '@/lib/validacao/produto'
+import { DESCRICAO_PRODUTO_MAX, NOME_PRODUTO_MAX, type ProdutoCampos } from '@/lib/limites-produto'
 import { criarProduto, definirFotoDoProduto, editarProduto } from './actions-produto'
 
 type ProdutoExistente = {
@@ -56,24 +54,19 @@ export function FormularioProduto({ produto, categorias, categoriaInicial }: Pro
                     return
                 }
 
-                // O produto já está salvo; a foto vai depois porque a pasta da loja só aceita envio de quem é dono dela.
-                if (foto) {
-                    const supabase = createClient()
-                    const arquivo = `produto-${resultado.id}-${Date.now()}.${extensaoDoBlob(foto)}`
-                    const { error } = await supabase.storage
-                        .from('fotos')
-                        .upload(`${resultado.lojaId}/${arquivo}`, foto, { contentType: foto.type })
-                    const salva = error ? null : await definirFotoDoProduto(resultado.id, urlPublicaDaFoto(resultado.lojaId, arquivo))
-                    if (error || !salva?.ok) {
-                        setErroGeral('O produto foi salvo, mas a foto não pôde ser enviada. Abra o produto e tente de novo.')
+                // O produto já está salvo; a foto vai em seguida, pela própria Server Action (sem cliente do
+                // Supabase no navegador). Se ela falhar, o produto continua salvo e a tela diz como tentar de novo.
+                if (foto || (removerFoto && produto?.foto_url)) {
+                    const envio = new FormData()
+                    if (foto) envio.set('foto', foto, `foto.${extensaoDoBlob(foto)}`)
+                    const salva = await definirFotoDoProduto(resultado.id, envio)
+                    if (!salva.ok) {
+                        setErroGeral(
+                            foto
+                                ? `O produto foi salvo, mas a foto não pôde ser enviada (${salva.erro.replace(/\.$/, '').toLowerCase()}). Abra o produto e tente de novo.`
+                                : 'O produto foi salvo, mas a foto não pôde ser removida. Tente de novo.',
+                        )
                         if (!produto) router.replace(`/painel/cardapio/produto/${resultado.id}`)
-                        router.refresh()
-                        return
-                    }
-                } else if (removerFoto && produto?.foto_url) {
-                    const removida = await definirFotoDoProduto(resultado.id, null)
-                    if (!removida.ok) {
-                        setErroGeral('O produto foi salvo, mas a foto não pôde ser removida. Tente de novo.')
                         router.refresh()
                         return
                     }

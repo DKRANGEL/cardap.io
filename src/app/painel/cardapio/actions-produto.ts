@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { contextoDaLoja } from '@/lib/acao-da-loja'
-import { caminhoDaFoto } from '@/lib/foto-do-bucket'
+import { caminhoDaFoto, urlPublicaDaFoto } from '@/lib/foto-do-bucket'
 import { produtoSchema, type ProdutoCampos } from '@/lib/validacao/produto'
 
 export type ResultadoProduto =
@@ -144,16 +144,32 @@ export async function editarProduto(id: string, formData: FormData): Promise<Res
     return { ok: true, id, lojaId: ctx.lojaId }
 }
 
-// Chamada depois que o navegador já subiu o arquivo para fotos/{loja_id}/. Troca a foto e apaga a antiga.
-// Com url = null, só remove a foto atual.
-export async function definirFotoDoProduto(id: string, url: string | null): Promise<ResultadoSimples> {
+const FOTO_MAX_BYTES = 1_500_000
+const TIPOS_DE_FOTO = ['image/webp', 'image/jpeg', 'image/png']
+
+// Recebe a foto já reduzida pelo navegador (800px, WebP) e a sobe para fotos/{loja_id}/, trocando a atual
+// e apagando a antiga. Sem arquivo, só remove a foto do produto. O envio passa pela Server Action para o
+// navegador não precisar do cliente do Supabase.
+export async function definirFotoDoProduto(id: string, formData: FormData): Promise<ResultadoSimples> {
     if (!z.uuid().safeParse(id).success) return { ok: false, erro: NAO_ENCONTRADO }
 
     const ctx = await contexto()
     if (ctx.erro !== undefined) return { ok: false, erro: ctx.erro }
 
-    if (url !== null && caminhoDaFoto(url, ctx.lojaId) === null) {
-        return { ok: false, erro: 'Endereço de imagem inválido.' }
+    const arquivo = formData.get('foto')
+    let url: string | null = null
+
+    if (arquivo instanceof File && arquivo.size > 0) {
+        if (!TIPOS_DE_FOTO.includes(arquivo.type)) return { ok: false, erro: 'Use uma imagem JPG, PNG ou WebP.' }
+        if (arquivo.size > FOTO_MAX_BYTES) return { ok: false, erro: 'Essa foto é grande demais. Tente outra.' }
+
+        const extensao = arquivo.type === 'image/webp' ? 'webp' : arquivo.type === 'image/png' ? 'png' : 'jpg'
+        const nomeDoArquivo = `produto-${id}-${Date.now()}.${extensao}`
+        const { error: erroEnvio } = await ctx.supabase.storage
+            .from('fotos')
+            .upload(`${ctx.lojaId}/${nomeDoArquivo}`, arquivo, { contentType: arquivo.type })
+        if (erroEnvio) return { ok: false, erro: 'Não foi possível enviar a foto. Tente de novo.' }
+        url = urlPublicaDaFoto(ctx.lojaId, nomeDoArquivo)
     }
 
     const { data: atual, error: erroAtual } = await ctx.supabase
@@ -162,8 +178,10 @@ export async function definirFotoDoProduto(id: string, url: string | null): Prom
         .eq('id', id)
         .eq('loja_id', ctx.lojaId)
         .maybeSingle()
-    if (erroAtual) return { ok: false, erro: 'Não foi possível salvar a foto. Tente de novo.' }
-    if (!atual) return { ok: false, erro: NAO_ENCONTRADO }
+    if (erroAtual || !atual) {
+        await apagarFotos(ctx.supabase, ctx.lojaId, [url])
+        return { ok: false, erro: erroAtual ? 'Não foi possível salvar a foto. Tente de novo.' : NAO_ENCONTRADO }
+    }
 
     const { data, error } = await ctx.supabase
         .from('produtos')
@@ -171,8 +189,11 @@ export async function definirFotoDoProduto(id: string, url: string | null): Prom
         .eq('id', id)
         .eq('loja_id', ctx.lojaId)
         .select('id')
-    if (error) return { ok: false, erro: 'Não foi possível salvar a foto. Tente de novo.' }
-    if (data.length === 0) return { ok: false, erro: NAO_ENCONTRADO }
+    if (error || data.length === 0) {
+        // o arquivo já subiu e a gravação falhou: não deixa o arquivo novo solto
+        await apagarFotos(ctx.supabase, ctx.lojaId, [url])
+        return { ok: false, erro: error ? 'Não foi possível salvar a foto. Tente de novo.' : NAO_ENCONTRADO }
+    }
 
     if (atual.foto_url !== url) await apagarFotos(ctx.supabase, ctx.lojaId, [atual.foto_url])
 
