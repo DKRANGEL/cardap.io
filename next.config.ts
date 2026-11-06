@@ -1,6 +1,19 @@
 import type { NextConfig } from 'next'
 
+const supabase = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL) : null
+
 const nextConfig: NextConfig = {
+    images: {
+        // Só as fotos públicas do bucket 'fotos'; qualquer outro host continua barrado pelo otimizador.
+        remotePatterns: supabase
+            ? [{
+                protocol: supabase.protocol.replace(':', '') as 'http' | 'https',
+                hostname: supabase.hostname,
+                port: supabase.port,
+                pathname: '/storage/v1/object/public/fotos/**',
+            }]
+            : [],
+    },
     transpilePackages: ['@heroui/system', '@heroui/react', '@heroui/theme'],
     experimental: {
         // A foto do produto (800px em WebP, na casa de 30 a 120 kB) sobe por Server Action, para o navegador
