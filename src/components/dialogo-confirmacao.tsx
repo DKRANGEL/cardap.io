@@ -14,13 +14,14 @@ type Props = {
     pendente?: boolean
     erro?: string | null
     devolverFocoA?: RefObject<HTMLElement | null>
+    acaoAlternativa?: { rotulo: string; onClick: () => void }
 }
 
 // <dialog> nativo: já prende o foco, fecha com Escape, deixa o fundo inerte e devolve o foco
 // ao botão que o abriu. Sem JS de biblioteca, de propósito.
 export function DialogoConfirmacao({
     aberto, onFechar, titulo, children, rotuloConfirmar, rotuloCancelar, onConfirmar, pendente = false, erro,
-    devolverFocoA,
+    devolverFocoA, acaoAlternativa,
 }: Props) {
     const dialogRef = useRef<HTMLDialogElement>(null)
     const cancelarRef = useRef<HTMLButtonElement>(null)
@@ -78,6 +79,12 @@ export function DialogoConfirmacao({
                             className="flex h-[52px] w-full items-center justify-center rounded-full bg-perigo-suave text-base font-semibold text-perigo disabled:opacity-60">
                         {pendente ? 'Excluindo…' : rotuloConfirmar}
                     </button>
+                    {acaoAlternativa && (
+                        <button type="button" onClick={acaoAlternativa.onClick} disabled={pendente}
+                                className="flex h-12 w-full items-center justify-center rounded-full bg-superficie-marcada text-base font-semibold text-tinta disabled:opacity-60">
+                            {acaoAlternativa.rotulo}
+                        </button>
+                    )}
                     <button type="button" ref={cancelarRef} onClick={onFechar} disabled={pendente}
                             className="flex h-12 w-full items-center justify-center rounded-full text-base font-semibold text-tinta disabled:opacity-60">
                         {rotuloCancelar}
