@@ -1,14 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { toBRL } from '../moeda.ts'
-import {
-    centavosDigitados,
-    centavosDoTexto,
-    DESCRICAO_PRODUTO_MAX,
-    NOME_PRODUTO_MAX,
-    PRECO_MAX_CENTAVOS,
-    produtoSchema,
-} from './produto.ts'
+import { centavosDigitados, centavosDoTexto, PRECO_MAX_CENTAVOS } from '../preco.ts'
+import { DESCRICAO_PRODUTO_MAX, NOME_PRODUTO_MAX, produtoSchema } from './produto.ts'
 
 const UUID = '3f2b8c1e-5a4d-4e7b-9c6a-1d2e3f4a5b6c'
 const base = { nome: 'Smash Furioso', descricao: '', categoria_id: UUID, preco: 'R$ 27,90' }

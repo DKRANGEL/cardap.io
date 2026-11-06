@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { toBRL } from '@/lib/moeda'
-import { centavosDigitados } from '@/lib/validacao/produto'
+import { centavosDigitados } from '@/lib/preco'
 import { Campo } from './campo'
 
 type Props = {
