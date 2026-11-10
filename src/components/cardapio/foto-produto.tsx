@@ -26,7 +26,7 @@ export function FotoProduto({ src, nome, tamanho, raio }: Props) {
             alt={nome}
             width={tamanho}
             height={tamanho}
-            unoptimized={src.startsWith('http')}
+            unoptimized={/^https?:\/\/(localhost|127\.0\.0\.1)[:/]/.test(src)}
             style={estilo}
             className={`shrink-0 object-cover ${raio}`}
         />

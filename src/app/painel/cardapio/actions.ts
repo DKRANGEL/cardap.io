@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-import { createClient } from '@/lib/supabase/server'
+import { contextoDaLoja } from '@/lib/acao-da-loja'
 import { categoriaSchema, nomeJaExiste, type CategoriaCampos } from '@/lib/validacao/categoria'
 
 export type ResultadoCategoria =
@@ -11,30 +11,9 @@ export type ResultadoCategoria =
 
 export type ResultadoExclusao = { ok: true; produtosAfetados: number } | { ok: false; erro: string }
 
-const SESSAO_EXPIRADA = 'Sua sessão expirou. Entre novamente.'
 const NAO_ENCONTRADA = 'Essa categoria não existe mais. Volte à lista e confira.'
 
-type Contexto =
-    | { erro: string }
-    | { erro?: undefined; supabase: Awaited<ReturnType<typeof createClient>>; lojaId: string }
-
-async function contexto(): Promise<Contexto> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) return { erro: SESSAO_EXPIRADA }
-
-    const { data: loja, error } = await supabase
-        .from('lojas')
-        .select('id')
-        .eq('owner_id', user.id)
-        .order('created_at', { ascending: true })
-        .limit(1)
-        .maybeSingle()
-
-    if (error) return { erro: 'Não deu pra falar com o servidor. Tente de novo.' }
-    if (!loja) return { erro: 'Crie sua loja antes de cadastrar categorias.' }
-    return { supabase, lojaId: loja.id as string }
-}
+const contexto = () => contextoDaLoja('Crie sua loja antes de cadastrar categorias.')
 
 function lerNome(formData: FormData) {
     const parsed = categoriaSchema.safeParse({ nome: formData.get('nome') })
