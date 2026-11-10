@@ -4,6 +4,7 @@ import QRCode from 'qrcode'
 import { StoreIcon } from 'lucide-react'
 import { carregarPainel } from '@/lib/painel-dados'
 import { BotaoCopiar } from './botao-copiar'
+import { BotaoPdf } from './botao-pdf'
 
 export const metadata = { title: 'Divulgar — cardap.io' }
 
@@ -73,6 +74,14 @@ export default async function DivulgarPage() {
                      className="rounded-lg border border-borda bg-white p-2"
                      dangerouslySetInnerHTML={{ __html: qr }} />
                 <p className="text-sm leading-5 text-tinta-media">Aponte a câmera do celular pra abrir o cardápio.</p>
+            </section>
+
+            <section aria-labelledby="titulo-pdf" className="flex flex-col gap-3">
+                <h2 id="titulo-pdf" className="text-[17px] leading-[22px] font-bold">Cardápio em PDF</h2>
+                <p className="text-[15px] leading-[22px] text-tinta-media">
+                    Uma versão pra imprimir ou mandar pelo WhatsApp.
+                </p>
+                <BotaoPdf />
             </section>
         </main>
     )
