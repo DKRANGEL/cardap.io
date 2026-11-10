@@ -103,6 +103,13 @@ export function LojaForm({ loja, whatsappInicial }: Props) {
                 setLogo(null)
             }
 
+            // Só na criação: volta ao Início para a pessoa seguir os próximos passos. Editar fica na tela.
+            if (!loja) {
+                router.push('/painel')
+                router.refresh()
+                return
+            }
+
             setSalvo(true)
             router.refresh()
           } catch {
