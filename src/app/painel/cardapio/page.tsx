@@ -1,52 +1,11 @@
 import Link from 'next/link'
-import { ImageOffIcon, LayoutListIcon, PencilIcon, PlusIcon, StoreIcon } from 'lucide-react'
+import { LayoutListIcon, PlusIcon, StoreIcon } from 'lucide-react'
 import { BOTAO_ESTADO, Estado } from '@/components/estado'
-import { toBRL } from '@/lib/moeda'
 import { carregarPainel } from '@/lib/painel-dados'
-import { InterruptorProduto } from './interruptor-produto'
+import { ListaCardapio } from './lista-cardapio'
+import { LinhaDoProduto, type ProdutoDaLista } from './linha-produto'
 
 export const metadata = { title: 'Cardápio — cardap.io' }
-
-type ProdutoDaLista = {
-    id: string
-    categoria_id: string | null
-    nome: string
-    preco_centavos: number
-    foto_url: string | null
-    ativo: boolean
-}
-
-function LinhaDoProduto({ produto }: { produto: ProdutoDaLista }) {
-    return (
-        <li className={`flex min-h-14 items-center gap-3 py-1.5 ${produto.ativo ? '' : 'opacity-60'}`}>
-            <Link href={`/painel/cardapio/produto/${produto.id}`} aria-label={`Editar ${produto.nome}`}
-                  className="flex min-h-14 min-w-0 flex-1 items-center gap-3">
-                {produto.foto_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- miniatura de 44px; o otimizador custaria mais do que a imagem
-                    <img src={produto.foto_url} alt="" width={44} height={44} loading="lazy"
-                         className="h-11 w-11 shrink-0 rounded-sm bg-superficie-marcada object-cover" />
-                ) : (
-                    <span aria-hidden className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sm bg-superficie-marcada">
-                        <ImageOffIcon className="h-5 w-5 text-carvao-500" />
-                    </span>
-                )}
-                <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] leading-5 font-semibold">{produto.nome}</span>
-                    <span className="flex items-center gap-2 text-sm leading-5 tabular-nums text-tinta-media">
-                        {toBRL(produto.preco_centavos)}
-                        {!produto.ativo && (
-                            <span className="rounded-xs bg-superficie-marcada px-1.5 text-xs leading-5 font-semibold text-tinta-media">
-                                Desativado
-                            </span>
-                        )}
-                    </span>
-                </span>
-                <PencilIcon aria-hidden className="h-4 w-4 shrink-0 text-tinta-suave" />
-            </Link>
-            <InterruptorProduto id={produto.id} nome={produto.nome} ativo={produto.ativo} />
-        </li>
-    )
-}
 
 export default async function CardapioPainelPage() {
     const { supabase, loja } = await carregarPainel()
@@ -74,13 +33,13 @@ export default async function CardapioPainelPage() {
     if (categoriasRes.error) throw categoriasRes.error
     if (produtosRes.error) throw produtosRes.error
 
-    const categorias = categoriasRes.data
+    const categorias = categoriasRes.data.map((c) => ({ id: c.id as string, nome: c.nome as string }))
     const produtos = produtosRes.data as ProdutoDaLista[]
-    const porCategoria = new Map<string, ProdutoDaLista[]>()
+    const porCategoria: Record<string, ProdutoDaLista[]> = {}
     const soltos: ProdutoDaLista[] = []
     for (const produto of produtos) {
         if (produto.categoria_id) {
-            porCategoria.set(produto.categoria_id, [...(porCategoria.get(produto.categoria_id) ?? []), produto])
+            ;(porCategoria[produto.categoria_id] ??= []).push(produto)
         } else {
             soltos.push(produto)
         }
@@ -118,38 +77,7 @@ export default async function CardapioPainelPage() {
                     </div>
 
                     <div className="flex flex-col gap-6">
-                        {categorias.map((categoria) => {
-                            const itens = porCategoria.get(categoria.id) ?? []
-                            return (
-                                <section key={categoria.id} aria-labelledby={`cat-${categoria.id}`}
-                                         className="rounded-lg border border-borda">
-                                    <div className="flex items-center gap-2 border-b border-borda px-4 py-2">
-                                        <h2 id={`cat-${categoria.id}`} className="min-w-0 flex-1 truncate text-[17px] leading-[22px] font-bold">
-                                            {categoria.nome}
-                                        </h2>
-                                        <Link href={`/painel/cardapio/categoria/${categoria.id}`}
-                                              aria-label={`Editar a categoria ${categoria.nome}`}
-                                              className="flex h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-[15px] font-semibold text-tinta-media">
-                                            <PencilIcon aria-hidden className="h-4 w-4" />
-                                            Editar
-                                        </Link>
-                                    </div>
-                                    {itens.length === 0 ? (
-                                        <div className="flex flex-col items-start gap-1 px-4 py-3">
-                                            <p className="text-sm leading-5 text-tinta-media">Nenhum produto nessa categoria ainda.</p>
-                                            <Link href={`/painel/cardapio/produto/novo?categoria=${categoria.id}`}
-                                                  className="flex h-11 items-center text-[15px] font-semibold text-acao">
-                                                Adicionar produto
-                                            </Link>
-                                        </div>
-                                    ) : (
-                                        <ul className="divide-y divide-borda px-4">
-                                            {itens.map((produto) => <LinhaDoProduto key={produto.id} produto={produto} />)}
-                                        </ul>
-                                    )}
-                                </section>
-                            )
-                        })}
+                        <ListaCardapio categorias={categorias} produtosPorCategoria={porCategoria} />
 
                         {soltos.length > 0 && (
                             <section aria-labelledby="cat-soltos" className="rounded-lg border border-aviso">
@@ -160,7 +88,9 @@ export default async function CardapioPainelPage() {
                                     </p>
                                 </div>
                                 <ul className="divide-y divide-borda px-4">
-                                    {soltos.map((produto) => <LinhaDoProduto key={produto.id} produto={produto} />)}
+                                    {soltos.map((produto) => (
+                                        <li key={produto.id}><LinhaDoProduto produto={produto} /></li>
+                                    ))}
                                 </ul>
                             </section>
                         )}

@@ -30,3 +30,10 @@ test('layout raiz não carrega o provider do HeroUI (ele vale só para /painel)'
     assert.doesNotMatch(layout, /@heroui/)
     assert.doesNotMatch(layout, /providers/i)
 })
+
+test('cardápio público não importa o arraste do painel', () => {
+    const infratores = ARQUIVOS_PUBLICOS.filter((arquivo) =>
+        /alca-arraste|lista-ordenavel|lista-cardapio|actions-ordem|\/reordenar/.test(readFileSync(arquivo, 'utf8')),
+    )
+    assert.deepEqual(infratores, [], `arraste proibido na árvore pública: ${infratores.join(', ')}`)
+})
