@@ -4,6 +4,7 @@ import { PlusIcon, UsersIcon } from 'lucide-react'
 import { BOTAO_ESTADO, Estado } from '@/components/estado'
 import { contextoDoAdmin, eAdmin } from '@/lib/acao-admin'
 import { RedefinirSenha } from './redefinir-senha'
+import { VerSenha } from './ver-senha'
 
 export const metadata = { title: 'Clientes — cardap.io' }
 
@@ -28,7 +29,7 @@ export default async function ClientesPage() {
     const lojaDe = new Map(lojas.map((l) => [l.owner_id as string, l]))
 
     return (
-        <main className="mx-auto flex w-full max-w-[448px] flex-col gap-6 px-4 pt-6 pb-6 md:mx-0">
+        <main className="mx-auto flex w-full max-w-[448px] flex-col gap-6 px-4 pt-6 pb-6 md:max-w-5xl md:px-8 md:pt-8">
             <header className="flex flex-col gap-1">
                 <h1 className="text-xl leading-[26px] font-bold tracking-tight">Clientes</h1>
                 <p className="text-[15px] leading-[22px] text-tinta-media">
@@ -39,7 +40,7 @@ export default async function ClientesPage() {
             </header>
 
             <Link href="/admin/clientes/novo"
-                  className="flex h-[52px] items-center justify-center gap-2 rounded-full bg-acao text-base font-semibold text-acao-contraste">
+                  className="flex h-[52px] items-center justify-center gap-2 rounded-full bg-acao text-base font-semibold text-acao-contraste md:self-start md:px-8">
                 <PlusIcon aria-hidden className="h-5 w-5" />
                 Cadastrar cliente
             </Link>
@@ -50,7 +51,7 @@ export default async function ClientesPage() {
                     <Link href="/admin/clientes/novo" className={BOTAO_ESTADO}>Cadastrar cliente</Link>
                 </Estado>
             ) : (
-                <ul className="flex flex-col gap-3">
+                <ul className="grid grid-cols-1 items-start gap-3 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
                     {clientes.map((cliente) => {
                         const loja = lojaDe.get(cliente.id)
                         return (
@@ -64,6 +65,7 @@ export default async function ClientesPage() {
                                         {loja ? `Loja: ${loja.nome} (/${loja.slug})` : 'Ainda não criou a loja.'}
                                     </p>
                                 </div>
+                                <VerSenha id={cliente.id} email={cliente.email ?? 'cliente'} />
                                 <RedefinirSenha id={cliente.id} email={cliente.email ?? 'cliente'} />
                             </li>
                         )
