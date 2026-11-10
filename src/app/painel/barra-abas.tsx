@@ -40,7 +40,7 @@ export function BarraAbas() {
                                 href={aba.href}
                                 aria-current={ativa ? 'page' : undefined}
                                 className={`flex h-full min-w-11 flex-col items-center justify-center gap-0.5 ${
-                                    ativa ? 'text-acao' : 'text-tinta-media'
+                                    ativa ? 'text-acao-texto' : 'text-tinta-media'
                                 }`}
                             >
                                 <aba.Icone aria-hidden className="h-[22px] w-[22px]" strokeWidth={ativa ? 2.4 : 2} />

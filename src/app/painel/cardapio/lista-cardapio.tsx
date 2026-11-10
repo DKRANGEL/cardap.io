@@ -41,7 +41,7 @@ export function ListaCardapio({ categorias, produtosPorCategoria }: Props) {
                             <div className="flex flex-col items-start gap-1 px-4 py-3">
                                 <p className="text-sm leading-5 text-tinta-media">Nenhum produto nessa categoria ainda.</p>
                                 <Link href={`/painel/cardapio/produto/novo?categoria=${categoria.id}`}
-                                      className="flex h-11 items-center text-[15px] font-semibold text-acao">
+                                      className="flex h-11 items-center text-[15px] font-semibold text-acao-texto">
                                     Adicionar produto
                                 </Link>
                             </div>

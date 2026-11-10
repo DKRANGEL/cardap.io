@@ -23,9 +23,10 @@ export function hexParaHslHeroui(hex: string): string {
 
 // Variáveis que repintam o painel do lojista com a cor da loja (tokens "acao" do Tailwind e o primary do HeroUI).
 export function temaDoPainel(corPrimaria: string): Record<string, string> {
-    const { cor, contraste } = derivarCorDaLoja(corPrimaria)
+    const { cor, contraste, tinta } = derivarCorDaLoja(corPrimaria)
     return {
         '--color-acao': cor,
+        '--color-acao-texto': tinta,
         '--color-acao-hover': `color-mix(in srgb, ${cor} 85%, #000)`,
         '--color-acao-suave': `color-mix(in srgb, ${cor} 10%, #fff)`,
         '--color-acao-contraste': contraste,

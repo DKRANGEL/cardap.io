@@ -17,5 +17,6 @@ test('o tema devolve todas as variáveis e o contraste do botão é legível', (
             assert.ok(t[k], `${cor} sem ${k}`)
         }
         assert.ok(razaoDeContraste(t['--color-acao'], t['--color-acao-contraste']) >= 4.5, cor)
+        assert.ok(razaoDeContraste(t['--color-acao-texto'], '#fffdfa') >= 4.5, `texto ${cor}`)
     }
 })
