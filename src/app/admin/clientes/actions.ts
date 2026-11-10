@@ -67,7 +67,7 @@ export async function criarCliente(formData: FormData): Promise<ResultadoCliente
 }
 
 export async function redefinirSenha(id: string, senha: string): Promise<ResultadoCliente> {
-    if (!z.uuid().safeParse(id).success) return { ok: false, erro: NAO_EXISTE }
+    if (!z.guid().safeParse(id).success) return { ok: false, erro: NAO_EXISTE }
     const problema = erroDaSenha(senha)
     if (problema) return { ok: false, erros: { senha: problema } }
 
@@ -91,7 +91,7 @@ export async function redefinirSenha(id: string, senha: string): Promise<Resulta
 }
 
 export async function verSenha(id: string): Promise<ResultadoSenha> {
-    if (!z.uuid().safeParse(id).success) return { ok: false, erro: NAO_EXISTE }
+    if (!z.guid().safeParse(id).success) return { ok: false, erro: NAO_EXISTE }
 
     const ctx = await contextoDoAdmin()
     if (ctx.erro !== undefined) return { ok: false, erro: ctx.erro }
