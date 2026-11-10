@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { whatsappParaExibicao } from '@/lib/validacao/loja'
 import { LogoutButton } from '../logout-button'
 import { LojaForm } from './loja-form'
+import { TrocarSenha } from './trocar-senha'
 
 export default async function LojaPage() {
     const supabase = await createClient()
@@ -38,6 +39,7 @@ export default async function LojaPage() {
             <section aria-labelledby="titulo-conta" className="mt-4 flex flex-col gap-3 border-t border-borda pt-6">
                 <h2 id="titulo-conta" className="text-[17px] leading-[22px] font-bold">Sua conta</h2>
                 <p className="text-sm leading-5 break-all text-tinta-media">Você entrou como {user.email}.</p>
+                <TrocarSenha />
                 <LogoutButton />
             </section>
         </main>

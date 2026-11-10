@@ -8,7 +8,8 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test \"src/**/*.test.ts\""
+    "test": "node --test \"src/**/*.test.ts\"",
+    "seed:admin": "node --env-file-if-exists=.env.local scripts/seed-admin.mjs"
   },
   "dependencies": {
     "@heroui/react": "^2.8.3",

@@ -47,6 +47,7 @@
     --color-acao-hover: var(--color-brasa-700);
     --color-acao-suave: var(--color-brasa-50);
     --color-acao-contraste: var(--color-carvao-0);
+    --color-acao-texto: var(--color-brasa-600);
 
     --radius-xs: 6px;
     --radius-sm: 10px;
