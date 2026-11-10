@@ -39,11 +39,11 @@ test('cardápio público não importa o arraste do painel', () => {
 })
 
 test('a chave de serviço só é usada por código de servidor do admin', () => {
-    const todos = arquivosDe('src')
-    const usam = todos.filter((a) => /supabase\/admin['"]|SUPABASE_SERVICE_ROLE_KEY/.test(readFileSync(a, 'utf8')))
-    const permitidos = usam.filter((a) => /[\/]lib[\/]supabase[\/]admin\.ts$|[\/]lib[\/]acao-admin\.ts$|[\/]app[\/]admin[\/]|\.test\.ts$/.test(a))
-    assert.deepEqual(usam.filter((a) => !permitidos.includes(a)), [])
+    const todos = arquivosDe('src').map((a) => ({ caminho: a.replaceAll('\\', '/'), codigo: readFileSync(a, 'utf8') }))
+    const usam = todos.filter((a) => /supabase\/admin['"]|SUPABASE_SERVICE_ROLE_KEY/.test(a.codigo))
+    const permitido = /\/lib\/supabase\/admin\.ts$|\/lib\/acao-admin\.ts$|\/app\/admin\/|\.test\.ts$/
+    assert.deepEqual(usam.filter((a) => !permitido.test(a.caminho)).map((a) => a.caminho), [])
 
-    const deCliente = usam.filter((a) => /^\s*['"]use client['"]/.test(readFileSync(a, 'utf8')))
+    const deCliente = usam.filter((a) => /^\s*['"]use client['"]/.test(a.codigo)).map((a) => a.caminho)
     assert.deepEqual(deCliente, [], 'a chave de serviço não pode aparecer em componente de cliente')
 })
