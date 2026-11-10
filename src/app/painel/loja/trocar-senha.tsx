@@ -4,11 +4,9 @@ import { useState, type FormEvent } from 'react'
 import { AlertCircleIcon, CheckCircle2Icon, KeyRoundIcon } from 'lucide-react'
 import { CampoSenha } from '@/components/campo-senha'
 import { SENHA_MIN, erroDaSenha } from '@/lib/credenciais'
-import { mensagemDeSenhaNova } from '@/lib/erros-auth'
-import { createClient } from '@/lib/supabase/client'
+import { trocarMinhaSenha } from './actions-conta'
 
 export function TrocarSenha() {
-    const [supabase] = useState(() => createClient())
     const [aberto, setAberto] = useState(false)
     const [senha, setSenha] = useState('')
     const [enviando, setEnviando] = useState(false)
@@ -33,9 +31,9 @@ export function TrocarSenha() {
 
         setEnviando(true)
         try {
-            const { error } = await supabase.auth.updateUser({ password: senha })
-            if (error) {
-                setErro(mensagemDeSenhaNova(error))
+            const resultado = await trocarMinhaSenha(senha)
+            if (!resultado.ok) {
+                setErro(resultado.erro)
                 return
             }
             fechar()
