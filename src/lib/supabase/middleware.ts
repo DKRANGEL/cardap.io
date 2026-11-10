@@ -26,20 +26,19 @@ export async function updateSession(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     const { pathname } = request.nextUrl
-
-    if (!user && pathname.startsWith('/painel')) {
+    const irPara = (destino: string) => {
         const url = request.nextUrl.clone()
-        url.pathname = '/entrar'
+        url.pathname = destino
         url.search = ''
         return NextResponse.redirect(url)
     }
 
-    if (user && pathname === '/entrar') {
-        const url = request.nextUrl.clone()
-        url.pathname = '/painel'
-        url.search = ''
-        return NextResponse.redirect(url)
-    }
+    if (!user && (pathname.startsWith('/painel') || pathname.startsWith('/admin'))) return irPara('/entrar')
+
+    // Barreira de navegação; as Server Actions da área admin conferem o papel de novo (contextoDoAdmin).
+    const admin = user?.app_metadata?.role === 'admin'
+    if (user && pathname.startsWith('/admin') && !admin) return irPara('/painel')
+    if (user && pathname === '/entrar') return irPara(admin ? '/admin' : '/painel')
 
     return supabaseResponse
 }
