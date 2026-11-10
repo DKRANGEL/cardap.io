@@ -37,3 +37,13 @@ test('cardápio público não importa o arraste do painel', () => {
     )
     assert.deepEqual(infratores, [], `arraste proibido na árvore pública: ${infratores.join(', ')}`)
 })
+
+test('a chave de serviço só é usada por código de servidor do admin', () => {
+    const todos = arquivosDe('src')
+    const usam = todos.filter((a) => /supabase\/admin['"]|SUPABASE_SERVICE_ROLE_KEY/.test(readFileSync(a, 'utf8')))
+    const permitidos = usam.filter((a) => /[\/]lib[\/]supabase[\/]admin\.ts$|[\/]lib[\/]acao-admin\.ts$|[\/]app[\/]admin[\/]|\.test\.ts$/.test(a))
+    assert.deepEqual(usam.filter((a) => !permitidos.includes(a)), [])
+
+    const deCliente = usam.filter((a) => /^\s*['"]use client['"]/.test(readFileSync(a, 'utf8')))
+    assert.deepEqual(deCliente, [], 'a chave de serviço não pode aparecer em componente de cliente')
+})
