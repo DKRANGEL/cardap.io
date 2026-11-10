@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { AlertCircleIcon, EyeIcon, EyeOffIcon } from 'lucide-react'
 import { Button, Input } from '@heroui/react'
 import { Marca } from '@/components/marca'
-import { erroDaSenha, erroDoEmail, normalizarEmail } from '@/lib/credenciais'
+import { erroDoEmail, normalizarEmail } from '@/lib/credenciais'
 import { mensagemDoLogin } from '@/lib/erros-auth'
 import { createClient } from '@/lib/supabase/client'
 
