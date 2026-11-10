@@ -35,7 +35,7 @@ export function LinhaDoProduto({ produto, alca, mover }: Props) {
                     </span>
                 )}
                 <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[15px] leading-5 font-semibold">{produto.nome}</span>
+                    <span className="line-clamp-2 text-[15px] leading-5 font-semibold break-words">{produto.nome}</span>
                     <span className="flex items-center gap-2 text-sm leading-5 tabular-nums text-tinta-media">
                         {toBRL(produto.preco_centavos)}
                         {!produto.ativo && (
