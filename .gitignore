@@ -43,3 +43,6 @@ next-env.d.ts
 
 # IDE
 /.idea/
+
+# documentos de planejamento (md de ia_docs ficam fora do Git)
+ia_docs/*.md
