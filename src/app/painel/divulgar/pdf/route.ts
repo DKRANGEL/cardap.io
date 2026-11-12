@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { montarHtmlDoCardapio, type LojaParaPdf } from '@/lib/pdf/montar-html'
+import { nomeDoArquivo, renderizarPdf } from '@/lib/pdf/renderizar'
 import { TEMPLATE_PADRAO, temTemplate } from '@/lib/pdf/templates'
 
 export const runtime = 'nodejs'
@@ -31,7 +32,18 @@ export async function GET(request: NextRequest) {
 
     try {
         const html = await montarHtmlDoCardapio(supabase, loja, template)
-        return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } })
+        // ?formato=html devolve o HTML (usado no preview); o padrão é o PDF.
+        if (request.nextUrl.searchParams.get('formato') === 'html') {
+            return new NextResponse(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } })
+        }
+        const pdf = await renderizarPdf(html)
+        return new NextResponse(new Uint8Array(pdf), {
+            headers: {
+                'Content-Type': 'application/pdf',
+                'Content-Disposition': `attachment; filename="${nomeDoArquivo(loja.slug)}"`,
+                'Cache-Control': 'no-store',
+            },
+        })
     } catch {
         return NextResponse.json({ erro: 'Não foi possível montar o cardápio. Tente de novo.' }, { status: 500 })
     }
