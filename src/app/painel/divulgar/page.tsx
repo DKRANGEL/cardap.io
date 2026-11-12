@@ -4,7 +4,7 @@ import QRCode from 'qrcode'
 import { StoreIcon } from 'lucide-react'
 import { carregarPainel } from '@/lib/painel-dados'
 import { BotaoCopiar } from './botao-copiar'
-import { BotaoPdf } from './botao-pdf'
+import { AcoesPdf } from './acoes-pdf'
 
 export const metadata = { title: 'Divulgar — cardap.io' }
 
@@ -81,7 +81,7 @@ export default async function DivulgarPage() {
                 <p className="text-[15px] leading-[22px] text-tinta-media">
                     Uma versão pra imprimir ou mandar pelo WhatsApp.
                 </p>
-                <BotaoPdf />
+                <AcoesPdf slug={loja.slug} />
             </section>
         </main>
     )
