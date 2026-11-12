@@ -20,6 +20,8 @@ export type DadosDoPdf = {
         logo: string | null
     }
     secoes: SecaoDoPdf[]
+    // Data de geração já formatada (dd/mm/aaaa), para o rodapé.
+    atualizadoEm: string
 }
 
 export type TemplateDoPdf = (dados: DadosDoPdf, css: { fontes: string }) => string
