@@ -1,9 +1,11 @@
+import type { ModeloId } from '../modelos.ts'
 import type { TemplateDoPdf } from '../tipos.ts'
-import { provisorio } from './provisorio.ts'
+import { classico } from './classico.ts'
+import { compacto } from './compacto.ts'
+import { destaque } from './destaque.ts'
+import { vitrine } from './vitrine.ts'
 
-// Registro plugável: um novo modelo é só mais uma linha aqui.
-export const TEMPLATES: Record<string, TemplateDoPdf> = { provisorio }
+export { TEMPLATE_PADRAO, temTemplate } from '../modelos.ts'
 
-export const TEMPLATE_PADRAO = 'provisorio'
-
-export const temTemplate = (id: string) => Object.hasOwn(TEMPLATES, id)
+// Registro plugável: um novo modelo é uma linha aqui e uma em modelos.ts.
+export const TEMPLATES: Record<ModeloId, TemplateDoPdf> = { classico, compacto, vitrine, destaque }
