@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
 import Link from 'next/link'
 import QRCode from 'qrcode'
-import { StoreIcon } from 'lucide-react'
+import { DownloadIcon, StoreIcon } from 'lucide-react'
 import { carregarPainel } from '@/lib/painel-dados'
 import { BotaoCopiar } from './botao-copiar'
 import { AcoesPdf } from './acoes-pdf'
@@ -44,19 +44,19 @@ export default async function DivulgarPage() {
     }
 
     const link = `${await enderecoDoSite()}/${loja.slug}`
-    const qr = await QRCode.toString(link, {
-        type: 'svg',
-        width: 240,
-        margin: 2,
-        color: { dark: '#1c1814', light: '#ffffff' },
-    })
+    const corDoQr = { dark: '#1c1814', light: '#ffffff' }
+    const [qr, qrPng] = await Promise.all([
+        QRCode.toString(link, { type: 'svg', width: 240, margin: 2, color: corDoQr }),
+        // PNG grande (1024px) e com margem de silêncio, pronto para imprimir ou subir em arte.
+        QRCode.toDataURL(link, { type: 'image/png', width: 1024, margin: 4, color: corDoQr }),
+    ])
 
     return (
         <main className="mx-auto flex min-h-dvh w-full max-w-[448px] flex-col gap-6 px-4 pt-6 pb-6">
             <header className="flex flex-col gap-1">
                 <h1 className="text-xl leading-[26px] font-bold tracking-tight">Divulgar</h1>
                 <p className="text-[15px] leading-[22px] text-tinta-media">
-                    Mande o link pros seus clientes ou mostre o QR code no balcão.
+                    Link, QR code e cardápio em PDF pra divulgar a sua loja.
                 </p>
             </header>
 
@@ -74,6 +74,11 @@ export default async function DivulgarPage() {
                      className="rounded-lg border border-borda bg-white p-2"
                      dangerouslySetInnerHTML={{ __html: qr }} />
                 <p className="text-sm leading-5 text-tinta-media">Aponte a câmera do celular pra abrir o cardápio.</p>
+                <a href={qrPng} download={`qr-code-${loja.slug}.png`}
+                   className="flex h-[52px] w-full items-center justify-center gap-2 rounded-full bg-superficie-marcada text-base font-semibold text-tinta">
+                    <DownloadIcon aria-hidden className="h-5 w-5" />
+                    Baixar QR code (PNG)
+                </a>
             </section>
 
             <section aria-labelledby="titulo-pdf" className="flex flex-col gap-3">
