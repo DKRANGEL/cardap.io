@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { AlertCircleIcon, EyeIcon, SendIcon, Share2Icon, XIcon } from 'lucide-react'
+import { AlertCircleIcon, EyeIcon, Share2Icon, XIcon } from 'lucide-react'
 
 const URL_PDF = '/painel/divulgar/pdf'
 const A4_LARGURA = 794
@@ -15,7 +15,6 @@ export function AcoesPdf({ slug }: Props) {
     const [html, setHtml] = useState<string | null>(null)
     const [escala, setEscala] = useState(1)
     const [gerando, setGerando] = useState(false)
-    const [pronto, setPronto] = useState<File | null>(null)
     const [erro, setErro] = useState<string | null>(null)
     const [carregandoPreview, setCarregandoPreview] = useState(false)
     const nomeArquivo = `cardapio-${slug}.pdf`
@@ -77,11 +76,6 @@ export function AcoesPdf({ slug }: Props) {
                 return
             } catch (e) {
                 if (e instanceof DOMException && e.name === 'AbortError') return
-                if (e instanceof DOMException && e.name === 'NotAllowedError') {
-                    setPronto(arquivo)
-                    setErro('O celular pediu um novo toque para compartilhar. Toque em “Enviar” abaixo.')
-                    return
-                }
             }
         }
         baixar(arquivo)
@@ -96,7 +90,6 @@ export function AcoesPdf({ slug }: Props) {
             const res = await fetch(URL_PDF, { signal: controle.signal })
             if (!res.ok || !res.headers.get('content-type')?.includes('application/pdf')) throw new Error()
             const arquivo = new File([await res.blob()], nomeArquivo, { type: 'application/pdf' })
-            setPronto(arquivo)
             await entregar(arquivo)
         } catch {
             setErro('Não foi possível gerar o PDF agora. Tente de novo em instantes.')
@@ -118,12 +111,6 @@ export function AcoesPdf({ slug }: Props) {
                 <Share2Icon aria-hidden className="h-5 w-5" />
                 {gerando ? 'Gerando o PDF…' : 'Compartilhar PDF'}
             </button>
-            {pronto && !gerando && (
-                <button type="button" onClick={() => entregar(pronto)} className={`${botao} bg-superficie-marcada text-tinta`}>
-                    <SendIcon aria-hidden className="h-5 w-5" />
-                    Enviar
-                </button>
-            )}
             <p role="status" aria-live="polite" className="sr-only">{gerando ? 'Gerando o PDF, aguarde.' : ''}</p>
             {erro && (
                 <div role="alert" className="flex items-start gap-2 rounded-md bg-perigo-suave p-3 text-sm leading-5 text-perigo">
