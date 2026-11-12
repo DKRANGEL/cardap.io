@@ -104,7 +104,7 @@ Idioma de UI, commits, PRs e issues: português do Brasil.
 ## Decisões do dono (confirmadas)
 - Node 24 (v24.13.1 em uso). Produção: Vercel (hospedagem do PDF ainda a testar na #17, milestone v1.0).
 - `ia_docs/` fica fora do Git. Não há CI nem deploy ainda (só ambiente de desenvolvimento).
-- `package.json` em `0.3.0`; `type: module` fica (os testes rodam `.ts` direto no Node, em ESM).
+- `package.json` em `0.4.0` (acompanha a tag da milestone); `type: module` fica (os testes rodam `.ts` direto no Node, em ESM).
 - Em Divulgar só existe "Compartilhar PDF" (abre a folha do sistema; baixa só se o aparelho não compartilha);
   sem botão "Enviar". O QR code tem "Baixar QR code (PNG)" (1024px, margem de silêncio).
 - Fluxo da v0.4.0: tag `v0.4.0` só ao fechar a milestone, depois do PR da `develop` para a `main`.
