@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
     },
     // As fontes do PDF são lidas do disco em tempo de execução; sem isso o build de produção não as leva junto.
     outputFileTracingIncludes: { '/painel/divulgar/pdf': ['./src/lib/pdf/fontes/**/*'] },
-    serverExternalPackages: ['sharp'],
+    serverExternalPackages: ['sharp', 'puppeteer-core', '@sparticuz/chromium'],
     transpilePackages: ['@heroui/system', '@heroui/react', '@heroui/theme'],
     experimental: {
         // A foto do produto (800px em WebP, na casa de 30 a 120 kB) sobe por Server Action, para o navegador
